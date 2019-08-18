@@ -53,6 +53,7 @@ D3DApp::D3DApp(HINSTANCE hInstance)
 
 D3DApp::~D3DApp()
 {
+	// 사용했던 자원들을 릴리즈 시켜준다. // 내부적으로 x->release()
 	ReleaseCOM(mRenderTargetView);
 	ReleaseCOM(mDepthStencilView);
 	ReleaseCOM(mSwapChain);

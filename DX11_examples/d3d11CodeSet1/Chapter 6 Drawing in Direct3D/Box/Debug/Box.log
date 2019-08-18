@@ -1,0 +1,8 @@
+﻿  fxc compile for debug: C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 6 Drawing in Direct3D\Box\FX\color.fx
+  Microsoft (R) Direct3D Shader Compiler 9.29.952.3111
+  Copyright (C) Microsoft Corporation 2002-2009. All rights reserved.
+  
+  compilation succeeded; see color.cod
+  compilation succeeded; see C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 6 Drawing in Direct3D\Box\FX\color.fxo
+  Box.vcxproj -> C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 6 Drawing in Direct3D\Box\Debug\Box.exe
+  Box.vcxproj -> C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 6 Drawing in Direct3D\Box\Debug\Box.pdb (Full PDB)
