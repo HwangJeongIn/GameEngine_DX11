@@ -519,6 +519,7 @@ void GeometryGenerator::BuildCylinderBottomCap(float bottomRadius, float topRadi
 
 void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, MeshData& meshData)
 {
+	// 그리드 가로 세로 버텍스 갯수를 받아서 면의 갯수까지 구해준다.
 	UINT vertexCount = m*n;
 	UINT faceCount   = (m-1)*(n-1)*2;
 
@@ -526,6 +527,7 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 	// Create the vertices.
 	//
 
+	// 텍스처 좌표 / 한칸 길이 / 절반 길이를 구해준다.
 	float halfWidth = 0.5f*width;
 	float halfDepth = 0.5f*depth;
 
@@ -535,6 +537,7 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 	float du = 1.0f / (n-1);
 	float dv = 1.0f / (m-1);
 
+	// 메쉬 데이터의 가변버텍스배열을 리사이즈 시켜준다.
 	meshData.Vertices.resize(vertexCount);
 	for(UINT i = 0; i < m; ++i)
 	{
@@ -543,6 +546,7 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 		{
 			float x = -halfWidth + j*dx;
 
+			// 각버텍스마다 노말 탄젠트 포지션 UV좌표를 구한다.
 			meshData.Vertices[i*n+j].Position = XMFLOAT3(x, 0.0f, z);
 			meshData.Vertices[i*n+j].Normal   = XMFLOAT3(0.0f, 1.0f, 0.0f);
 			meshData.Vertices[i*n+j].TangentU = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -565,10 +569,12 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 	{
 		for(UINT j = 0; j < n-1; ++j)
 		{
+			// abc
 			meshData.Indices[k]   = i*n+j;
 			meshData.Indices[k+1] = i*n+j+1;
 			meshData.Indices[k+2] = (i+1)*n+j;
 
+			// cbd
 			meshData.Indices[k+3] = (i+1)*n+j;
 			meshData.Indices[k+4] = i*n+j+1;
 			meshData.Indices[k+5] = (i+1)*n+j+1;

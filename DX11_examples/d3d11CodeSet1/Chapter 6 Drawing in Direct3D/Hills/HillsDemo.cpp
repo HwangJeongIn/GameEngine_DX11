@@ -248,6 +248,7 @@ void HillsApp::BuildGeometryBuffers()
 	{
 		XMFLOAT3 p = grid.Vertices[i].Position;
 
+		// 특정계산식으로 높이값 설정
 		p.y = GetHeight(p.x, p.z);
 
 		vertices[i].Pos   = p;

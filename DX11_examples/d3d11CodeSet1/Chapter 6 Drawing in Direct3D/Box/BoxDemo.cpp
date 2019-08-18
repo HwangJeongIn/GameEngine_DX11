@@ -13,6 +13,7 @@
 #include "d3dx11Effect.h"
 #include "MathHelper.h"
 
+// 버텍스 형식
 struct Vertex
 {
 	XMFLOAT3 Pos;
@@ -94,6 +95,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 BoxApp::BoxApp(HINSTANCE hInstance)
 : D3DApp(hInstance), mBoxVB(0), mBoxIB(0), mFX(0), mTech(0),
   mfxWorldViewProj(0), mInputLayout(0), 
+	// 구 표면에서 원점에있는 정육면체를 바라보는 프로그램이다.
+	// 초기 각도는 270 / 45도로 해두었고 구의 반지름은 5로 설정해주었다.
+	// 여기서 theta는 z축의 양의 방향으로부터 원점과 p가 이루는 직선까지의 각
+	// phi는 x축의 양의 방향으로부터 원점과 p가 이루는 직선을 xy평면에 투영시킨 직선까지의 각
   mTheta(1.5f*MathHelper::Pi), mPhi(0.25f*MathHelper::Pi), mRadius(5.0f)
 {
 	mMainWndCaption = L"Box Demo";
@@ -131,9 +136,14 @@ bool BoxApp::Init()
 
 void BoxApp::OnResize()
 {
+	// 이함수는 MsgProc에서 리사이즈 이벤트가 발생했을때 호출된다.
+	// 리사이즈 이벤트가 발생했을때 클라이언트의 너비와 높이가 최신화되고 그 값을 가지고
+	// 렌더 타겟뷰 스텐실 관련 자원들을 릴리즈후 다시 만들어준다.
 	D3DApp::OnResize();
 
 	// The window resized, so update the aspect ratio and recompute the projection matrix.
+	// aspect ratio역시 내부적으로 바뀌어서 새롭게 계산된다. 
+	// 이렇게 투영창의 비율을 맞춰주는 이유는 내부 백버퍼와 맞춰주기 위해서이다. // 그래야 스트레치가 안일어난다.
 	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 	XMStoreFloat4x4(&mProj, P);
 }
@@ -141,12 +151,15 @@ void BoxApp::OnResize()
 void BoxApp::UpdateScene(float dt)
 {
 	// Convert Spherical to Cartesian coordinates.
+	// 구면좌표계 참고
 	float x = mRadius*sinf(mPhi)*cosf(mTheta);
 	float z = mRadius*sinf(mPhi)*sinf(mTheta);
 	float y = mRadius*cosf(mPhi);
 
 	// Build the view matrix.
+	// 구면에 붙어서
 	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
+	// 원점에있는 물체를 바라본다.
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -156,6 +169,7 @@ void BoxApp::UpdateScene(float dt)
 
 void BoxApp::DrawScene()
 {
+	// 스텐실과 렌더타겟뷰 클리어
 	md3dImmediateContext->ClearRenderTargetView(mRenderTargetView, reinterpret_cast<const float*>(&Colors::LightSteelBlue));
 	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -249,6 +263,7 @@ void BoxApp::OnMouseMove(WPARAM btnState, int x, int y)
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
 		// Make each pixel correspond to a quarter of a degree.
+		// 1픽셀이 0.25도가 된다.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 
@@ -257,6 +272,7 @@ void BoxApp::OnMouseMove(WPARAM btnState, int x, int y)
 		mPhi   += dy;
 
 		// Restrict the angle mPhi.
+		// 180도 미만으로 잘라주었다.
 		mPhi = MathHelper::Clamp(mPhi, 0.1f, MathHelper::Pi-0.1f);
 	}
 	else if( (btnState & MK_RBUTTON) != 0 )

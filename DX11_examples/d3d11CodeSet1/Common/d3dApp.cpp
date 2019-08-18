@@ -137,13 +137,14 @@ void D3DApp::OnResize()
 	// Release the old views, as they hold references to the buffers we
 	// will be destroying.  Also release the old depth/stencil buffer.
 
+	// 기존 렌더타겟뷰와 스텐실관련 뷰와 버퍼를 릴리즈 시켜준다.
 	ReleaseCOM(mRenderTargetView);
 	ReleaseCOM(mDepthStencilView);
 	ReleaseCOM(mDepthStencilBuffer);
 
 
 	// Resize the swap chain and recreate the render target view.
-
+	// 스왑체인을 리사이즈하고 렌더타겟뷰를 다시 생성해준다.
 	HR(mSwapChain->ResizeBuffers(1, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
 	HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
