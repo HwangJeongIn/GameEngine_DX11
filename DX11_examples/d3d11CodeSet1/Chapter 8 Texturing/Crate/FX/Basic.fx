@@ -21,11 +21,13 @@ cbuffer cbPerObject
 	float4x4 gWorld;
 	float4x4 gWorldInvTranspose;
 	float4x4 gWorldViewProj;
+	// 나중에 텍스처를 이용하여 애니메이션 효과를 줄때 사용하면 될 것 같다.
 	float4x4 gTexTransform;
 	Material gMaterial;
 }; 
 
 // Nonnumeric values cannot be added to a cbuffer.
+// 숫자가 아닌 값은 상수 버퍼 바깥에 두어야 한다.
 Texture2D gDiffuseMap;
 
 SamplerState samAnisotropic
@@ -33,6 +35,8 @@ SamplerState samAnisotropic
 	Filter = ANISOTROPIC;
 	MaxAnisotropy = 4;
 
+	// 좌표지정모드
+	// 좌표가 넘으면 반복적으로 매핑되도록 설정
 	AddressU = WRAP;
 	AddressV = WRAP;
 };
@@ -64,11 +68,17 @@ VertexOut VS(VertexIn vin)
 	vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
 	
 	// Output vertex attributes for interpolation across triangle.
+	// 텍스처 행렬을 적용한 텍스처 좌표
 	vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
 
 	return vout;
 }
  
+/*
+uniform - 변수에 uniform 키워드를 접두어로 붙이면 변수가 쉐이더 외부, 
+		  예를 들어 C++ 어플리케이션에서 초기화 되어 쉐이더에 입력됨을 의미한다.
+*/
+// 외부적으로 라이트 카운트와 유즈텍스처 플래그가 입력으로 들어온다.
 float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure) : SV_Target
 {
 	// Interpolating normal can unnormalize it, so normalize it.
@@ -84,10 +94,12 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure) : SV_
 	toEye /= distToEye;
 	
     // Default to multiplicative identity.
+	// 항등원 // 만약에 텍스처를 사용하지 않았을때 영향을 주지 않게 하기 위해서 설정
     float4 texColor = float4(1, 1, 1, 1);
     if(gUseTexure)
 	{
 		// Sample texture.
+		// 좌표와 표본을 어떻게 추출할지 지정한 값을 넣어주면 그에 맞춰서 추출한다.
 		texColor = gDiffuseMap.Sample( samAnisotropic, pin.Tex );
 	}
 	 
@@ -104,6 +116,7 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure) : SV_
 		float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 		// Sum the light contribution from each light source.  
+		// 각 광원이 기여한 빛을 합한다.
 		[unroll]
 		for(int i = 0; i < gLightCount; ++i)
 		{
@@ -117,10 +130,12 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure) : SV_
 		}
 
 		// Modulate with late add.
+		// 최종적으로 텍스처는 ambient diffuse의 영향을 주지만 spec에는 영향을 주면 안된다.
 		litColor = texColor*(ambient + diffuse) + spec;
 	}
 
 	// Common to take alpha from diffuse material and texture.
+	// 일반적으로 diffuse 재질의 알파성분을 최종 알파값으로 사용한다.
 	litColor.a = gMaterial.Diffuse.a * texColor.a;
 
     return litColor;

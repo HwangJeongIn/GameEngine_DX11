@@ -106,6 +106,8 @@ TexturedHillsAndWavesApp::TexturedHillsAndWavesApp(HINSTANCE hInstance)
 	XMStoreFloat4x4(&mView, I);
 	XMStoreFloat4x4(&mProj, I);
 
+	// 땅의 텍스처행렬로 x y를 5배 늘린다 즉 각각의 좌표값이 5배가되고 
+	// wrap모드로 텍스처를 붙이기 때문에 5개의 타일이 생성된다
 	XMMATRIX grassTexScale = XMMatrixScaling(5.0f, 5.0f, 0.0f);
 	XMStoreFloat4x4(&mGrassTexTransform, grassTexScale);
 
@@ -157,6 +159,18 @@ bool TexturedHillsAndWavesApp::Init()
 	Effects::InitAll(md3dDevice);
 	InputLayouts::InitAll(md3dDevice);
 
+	/*
+	    D3DX11CreateShaderResourceViewFromFileW(
+        ID3D11Device*               pDevice,
+        LPCWSTR                     pSrcFile,
+        D3DX11_IMAGE_LOAD_INFO      *pLoadInfo,
+        ID3DX11ThreadPump*          pPump,
+        ID3D11ShaderResourceView**  ppShaderResourceView,
+        HRESULT*                    pHResult);
+	
+	*/
+	// D3DX11_IMAGE_LOAD_INFO loadInfo / loadInfo.format = DXGI_FORMAT_BC3_UNORM
+	// D3DX11_IMAGE_LOAD_INFO      *pLoadInfo 로 압축가능
 	HR(D3DX11CreateShaderResourceViewFromFile(md3dDevice, 
 		L"Textures/grass.dds", 0, 0, &mGrassMapSRV, 0 ));
 
@@ -187,7 +201,8 @@ void TexturedHillsAndWavesApp::UpdateScene(float dt)
 	mEyePosW = XMFLOAT3(x, y, z);
 
 	// Build the view matrix.
-	XMVECTOR pos    = XMVectorSet(x, y, z, 1.0f);
+	XMVECTOR pos = XMVectorSet(0, 100, -100, 1.0f);
+	//XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up     = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -237,9 +252,13 @@ void TexturedHillsAndWavesApp::UpdateScene(float dt)
 	//
 
 	// Tile water texture.
-	XMMATRIX wavesScale = XMMatrixScaling(5.0f, 5.0f, 0.0f);
+	// 여러개의 타일로 깔아준다.
+	XMMATRIX wavesScale = XMMatrixScaling(13.0f, 13.0f, 0.0f);
 
 	// Translate texture over time.
+	// 텍스처 좌표 기준이므로 y 로 1만큼 / x로 2만큼 이동한다.
+	// 예를들면 텍스처 좌표 x,y = 0,0에서 2,1로 이동한 것이다.
+	// 텍스처 y축기준으로 아래로 내려가는 효과를 만들어지고 x축기준으로 왼쪽으로 진행하는 효과가 만들어진다.
 	mWaterTexOffset.y += 0.05f*dt;
 	mWaterTexOffset.x += 0.1f*dt;	
 	XMMATRIX wavesOffset = XMMatrixTranslation(mWaterTexOffset.x, mWaterTexOffset.y, 0.0f);
@@ -287,7 +306,10 @@ void TexturedHillsAndWavesApp::DrawScene()
 		Effects::BasicFX->SetWorld(world);
 		Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
 		Effects::BasicFX->SetWorldViewProj(worldViewProj);
+
+		// 땅의 텍스처 행렬
 		Effects::BasicFX->SetTexTransform(XMLoadFloat4x4(&mGrassTexTransform));
+
 		Effects::BasicFX->SetMaterial(mLandMat);
 		Effects::BasicFX->SetDiffuseMap(mGrassMapSRV);
 
@@ -308,7 +330,10 @@ void TexturedHillsAndWavesApp::DrawScene()
 		Effects::BasicFX->SetWorld(world);
 		Effects::BasicFX->SetWorldInvTranspose(worldInvTranspose);
 		Effects::BasicFX->SetWorldViewProj(worldViewProj);
+
+		// 물의 텍스처 행렬
 		Effects::BasicFX->SetTexTransform(XMLoadFloat4x4(&mWaterTexTransform));
+		
 		Effects::BasicFX->SetMaterial(mWavesMat);
 		Effects::BasicFX->SetDiffuseMap(mWavesMapSRV);
 

@@ -105,6 +105,8 @@ void Waves::Update(float dt)
 				// Moreover, our +z axis goes "down"; this is just to 
 				// keep consistent with our row indices going down.
 
+				// 파도로직 핵심
+				// 인접 인덱스들을 통해서 적용
 				mPrevSolution[i*mNumCols+j].y = 
 					mK1*mPrevSolution[i*mNumCols+j].y +
 					mK2*mCurrSolution[i*mNumCols+j].y +
@@ -133,6 +135,7 @@ void Waves::Disturb(UINT i, UINT j, float magnitude)
 	float halfMag = 0.5f*magnitude;
 
 	// Disturb the ijth vertex height and its neighbors.
+	// 인접인덱스는 높이의 .5배
 	mCurrSolution[i*mNumCols+j].y     += magnitude;
 	mCurrSolution[i*mNumCols+j+1].y   += halfMag;
 	mCurrSolution[i*mNumCols+j-1].y   += halfMag;

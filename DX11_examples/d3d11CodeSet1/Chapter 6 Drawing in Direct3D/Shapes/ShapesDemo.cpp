@@ -51,6 +51,7 @@ private:
 	ID3D11InputLayout* mInputLayout;
 
 	ID3D11RasterizerState* mWireframeRS;
+	ID3D11RasterizerState* mSolidRS;
 
 	// Define transformations from local spaces to world space.
 	XMFLOAT4X4 mSphereWorld[10];
@@ -62,6 +63,8 @@ private:
 	XMFLOAT4X4 mView;
 	XMFLOAT4X4 mProj;
 
+	// 하나의 인덱스와 버텍스 버퍼에 모두 넣는데 
+	// 정확한 렌더링을 위해 오프셋값들을 모두 알아야 한다.
 	int mBoxVertexOffset;
 	int mGridVertexOffset;
 	int mSphereVertexOffset;
@@ -103,7 +106,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
 ShapesApp::ShapesApp(HINSTANCE hInstance)
 : D3DApp(hInstance), mVB(0), mIB(0), mFX(0), mTech(0),
-  mfxWorldViewProj(0), mInputLayout(0), mWireframeRS(0),
+  mfxWorldViewProj(0), mInputLayout(0), mWireframeRS(0), mSolidRS(0),
   mTheta(1.5f*MathHelper::Pi), mPhi(0.1f*MathHelper::Pi), mRadius(15.0f)
 {
 	mMainWndCaption = L"Shapes Demo";
@@ -113,6 +116,10 @@ ShapesApp::ShapesApp(HINSTANCE hInstance)
 
 	XMMATRIX I = XMMatrixIdentity();
 	XMStoreFloat4x4(&mGridWorld, I);
+	
+	//XMMATRIX temp = XMMatrixRotationY(-0.05f*MathHelper::Pi);
+	//XMStoreFloat4x4(&mGridWorld, temp);
+
 	XMStoreFloat4x4(&mView, I);
 	XMStoreFloat4x4(&mProj, I);
 
@@ -141,6 +148,7 @@ ShapesApp::~ShapesApp()
 	ReleaseCOM(mFX);
 	ReleaseCOM(mInputLayout);
 	ReleaseCOM(mWireframeRS);
+	ReleaseCOM(mSolidRS);
 }
 
 bool ShapesApp::Init()
@@ -159,8 +167,15 @@ bool ShapesApp::Init()
 	wireframeDesc.FrontCounterClockwise = false;
 	wireframeDesc.DepthClipEnable = true;
 
-	HR(md3dDevice->CreateRasterizerState(&wireframeDesc, &mWireframeRS));
+	D3D11_RASTERIZER_DESC solidDesc;
+	ZeroMemory(&solidDesc, sizeof(D3D11_RASTERIZER_DESC));
+	solidDesc.FillMode = D3D11_FILL_SOLID;
+	solidDesc.CullMode = D3D11_CULL_BACK;
+	solidDesc.FrontCounterClockwise = false;
+	solidDesc.DepthClipEnable = true;
 
+	HR(md3dDevice->CreateRasterizerState(&wireframeDesc, &mWireframeRS));
+	HR(md3dDevice->CreateRasterizerState(&solidDesc, &mSolidRS));
 	return true;
 }
 
@@ -211,6 +226,8 @@ void ShapesApp::DrawScene()
  
     D3DX11_TECHNIQUE_DESC techDesc;
     mTech->GetDesc( &techDesc );
+	// 가지고 있는 인덱스 버텍스 버퍼를 이용해서 여러가지 도형을 그린다.
+	// 같은 도형을 그리지만 transform정보가 다른 경우에는 인스턴싱 기법 비슷하게 사용한다. // world matrix만 변경해서 그림
     for(UINT p = 0; p < techDesc.Passes; ++p)
     {
 		// Draw the grid.
@@ -311,6 +328,8 @@ void ShapesApp::BuildGeometryBuffers()
 	geoGen.CreateSphere(0.5f, 20, 20, sphere);
 	//geoGen.CreateGeosphere(0.5f, 2, sphere);
 	geoGen.CreateCylinder(0.5f, 0.3f, 3.0f, 20, 20, cylinder);
+	//geoGen.CreateCylinder(0.5f, 0.0f, 3.0f, 4, 5, cylinder);
+
 
 	// Cache the vertex offsets to each object in the concatenated vertex buffer.
 	mBoxVertexOffset      = 0;
@@ -352,6 +371,7 @@ void ShapesApp::BuildGeometryBuffers()
 	XMFLOAT4 black(0.0f, 0.0f, 0.0f, 1.0f);
 
 	UINT k = 0;
+	// 각 버텍스 색 지정
 	for(size_t i = 0; i < box.Vertices.size(); ++i, ++k)
 	{
 		vertices[k].Pos   = box.Vertices[i].Position;
@@ -376,7 +396,15 @@ void ShapesApp::BuildGeometryBuffers()
 		vertices[k].Color = black;
 	}
 
+	// 버텍스 버퍼 생성
     D3D11_BUFFER_DESC vbd;
+	// 정적버퍼 // 불변 
+	/*
+	A resource that can only be read by the GPU. 
+	It cannot be written by the GPU, and cannot be accessed at all by the CPU. 
+	This type of resource must be initialized when it is created, 
+	since it cannot be changed after creation.
+	*/
     vbd.Usage = D3D11_USAGE_IMMUTABLE;
     vbd.ByteWidth = sizeof(Vertex) * totalVertexCount;
     vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -390,6 +418,7 @@ void ShapesApp::BuildGeometryBuffers()
 	// Pack the indices of all the meshes into one index buffer.
 	//
 
+	// 인덱스 버퍼 생성
 	std::vector<UINT> indices;
 	indices.insert(indices.end(), box.Indices.begin(), box.Indices.end());
 	indices.insert(indices.end(), grid.Indices.begin(), grid.Indices.end());

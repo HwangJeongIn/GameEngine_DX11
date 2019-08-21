@@ -127,8 +127,20 @@ bool CrateApp::Init()
 
 	// Must init Effects first since InputLayouts depend on shader signatures.
 	Effects::InitAll(md3dDevice);
-	InputLayouts::InitAll(md3dDevice);
 
+	// 레이아웃을 만들때 쉐이더 코드에서 DESC 정보를 받아온다.
+	// Effects::BasicFX->Light1Tech->GetPassByIndex(0)->GetDesc(&passDesc);
+	InputLayouts::InitAll(md3dDevice);
+	
+	/*
+	HRESULT CreateShaderResourceView(
+	  ID3D11Resource                        *pResource,
+	  const D3D11_SHADER_RESOURCE_VIEW_DESC *pDesc,
+	  ID3D11ShaderResourceView              **ppSRView
+	);
+	fromfile이 아닌 이상 이런식으로 포맷 등의 정보를 명시해야한다.
+	*/
+	// 쉐이더 리소스뷰를 만들어준다.
 	HR(D3DX11CreateShaderResourceViewFromFile(md3dDevice, 
 		L"Textures/WoodCrate01.dds", 0, 0, &mDiffuseMapSRV, 0 ));
  
@@ -201,6 +213,9 @@ void CrateApp::DrawScene()
 		Effects::BasicFX->SetWorldViewProj(worldViewProj);
 		Effects::BasicFX->SetTexTransform(XMLoadFloat4x4(&mTexTransform));
 		Effects::BasicFX->SetMaterial(mBoxMat);
+
+		// 내부적으로 쉐이더내 변수를 초기화한다.
+		// 	DiffuseMap        = mFX->GetVariableByName("gDiffuseMap")->AsShaderResource(); // 이런식으로 쉐이더에서 받아온다.
 		Effects::BasicFX->SetDiffuseMap(mDiffuseMapSRV);
 
 		activeTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);

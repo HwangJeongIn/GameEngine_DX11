@@ -48,6 +48,8 @@ BasicEffect::BasicEffect(ID3D11Device* device, const std::wstring& filename)
 	EyePosW           = mFX->GetVariableByName("gEyePosW")->AsVector();
 	DirLights         = mFX->GetVariableByName("gDirLights");
 	Mat               = mFX->GetVariableByName("gMaterial");
+
+	// 쉐이더 코드내 변수에 대해서 접근할 수 있는 포인터를 얻는다.
 	DiffuseMap        = mFX->GetVariableByName("gDiffuseMap")->AsShaderResource();
 }
 

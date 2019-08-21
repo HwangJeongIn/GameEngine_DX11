@@ -178,6 +178,8 @@ void WavesDemo::UpdateScene(float dt)
  
 		DWORD i = 5 + rand() % 190;
 		DWORD j = 5 + rand() % 190;
+		//i = 10;
+		//j = 99;
 
 		float r = MathHelper::RandF(1.0f, 2.0f);
 

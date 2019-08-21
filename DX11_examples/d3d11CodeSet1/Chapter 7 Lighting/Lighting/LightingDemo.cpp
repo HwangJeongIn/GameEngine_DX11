@@ -247,8 +247,12 @@ void LightingApp::UpdateScene(float dt)
 	//
 
 	// Circle light over the land surface.
+	// 지형 주위로 원을 그리면서 이동
 	mPointLight.Position.x = 70.0f*cosf( 0.2f*mTimer.TotalTime() );
 	mPointLight.Position.z = 70.0f*sinf( 0.2f*mTimer.TotalTime() );
+
+
+	// 높이를 구하는 방식은 편미분도 가능
 	mPointLight.Position.y = MathHelper::Max(GetHillHeight(mPointLight.Position.x, 
 		mPointLight.Position.z), -3.0f) + 10.0f;
 
@@ -256,7 +260,10 @@ void LightingApp::UpdateScene(float dt)
 	// The spotlight takes on the camera position and is aimed in the
 	// same direction the camera is looking.  In this way, it looks
 	// like we are holding a flashlight.
+
+	// 눈의 위치는 카메라가 이동함에따라 같이 이동한다.
 	mSpotLight.Position = mEyePosW;
+	// 눈(pos)에서 zero(target)까지 방향
 	XMStoreFloat3(&mSpotLight.Direction, XMVector3Normalize(target - pos));
 }
 
@@ -276,6 +283,7 @@ void LightingApp::DrawScene()
 	XMMATRIX viewProj = view*proj;
 
 	// Set per frame constants.
+	// 쉐이더 상수 버퍼를 최신화 하기 위해 캐시 // 추후 렌더링 파이프라인에 처리과정에서 최신화됨
 	mfxDirLight->SetRawValue(&mDirLight, 0, sizeof(mDirLight));
 	mfxPointLight->SetRawValue(&mPointLight, 0, sizeof(mPointLight));
 	mfxSpotLight->SetRawValue(&mSpotLight, 0, sizeof(mSpotLight));
@@ -374,11 +382,18 @@ void LightingApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 float LightingApp::GetHillHeight(float x, float z)const
 {
+
 	return 0.3f*( z*sinf(0.1f*x) + x*cosf(0.1f*z) );
 }
 
 XMFLOAT3 LightingApp::GetHillNormal(float x, float z)const
 {
+	// 이는 편미분을 통해서 나온값들이다.
+	// +x / +z방향에서의 접선벡터를 미분으로 구하고
+	// df/dx : 0.03z * cos(0.1x) + 0.3 * cos(0.1z)
+	// df/dz : 0.3 * sin(0.1x) - 0.03x * sin(0.1z)
+	// 두값을 외적하면 노멀벡터가 나온다.
+
 	// n = (-df/dx, 1, -df/dz)
 	XMFLOAT3 n(
 		-0.03f*z*cosf(0.1f*x) - 0.3f*cosf(0.1f*z),

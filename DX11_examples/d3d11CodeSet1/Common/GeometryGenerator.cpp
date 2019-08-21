@@ -100,8 +100,19 @@ void GeometryGenerator::CreateSphere(float radius, UINT sliceCount, UINT stackCo
 	// Poles: note that there will be texture coordinate distortion as there is
 	// not a unique point on the texture map to assign to the pole when mapping
 	// a rectangular texture onto a sphere.
-	Vertex topVertex(0.0f, +radius, 0.0f, 0.0f, +1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	Vertex bottomVertex(0.0f, -radius, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	Vertex topVertex(
+		0.0f, +radius, 0.0f,
+		0.0f, +1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f
+	);
+
+	Vertex bottomVertex(
+		0.0f, -radius, 0.0f,
+		0.0f, -1.0f, 0.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f
+	);
 
 	meshData.Vertices.push_back( topVertex );
 
@@ -217,9 +228,11 @@ void GeometryGenerator::Subdivide(MeshData& meshData)
 	// *-----*-----*
 	// v0    m2     v2
 
+	// 총면의 개수를 구한다.
 	UINT numTris = inputCopy.Indices.size()/3;
 	for(UINT i = 0; i < numTris; ++i)
 	{
+
 		Vertex v0 = inputCopy.Vertices[ inputCopy.Indices[i*3+0] ];
 		Vertex v1 = inputCopy.Vertices[ inputCopy.Indices[i*3+1] ];
 		Vertex v2 = inputCopy.Vertices[ inputCopy.Indices[i*3+2] ];
@@ -259,6 +272,7 @@ void GeometryGenerator::Subdivide(MeshData& meshData)
 		meshData.Vertices.push_back(m1); // 4
 		meshData.Vertices.push_back(m2); // 5
  
+		// 면 4개로 분할
 		meshData.Indices.push_back(i*6+0);
 		meshData.Indices.push_back(i*6+3);
 		meshData.Indices.push_back(i*6+5);
@@ -286,7 +300,7 @@ void GeometryGenerator::CreateGeosphere(float radius, UINT numSubdivisions, Mesh
 
 	const float X = 0.525731f; 
 	const float Z = 0.850651f;
-
+	// 정이십면체를 만든다.
 	XMFLOAT3 pos[12] = 
 	{
 		XMFLOAT3(-X, 0.0f, Z),  XMFLOAT3(X, 0.0f, Z),  
@@ -314,6 +328,7 @@ void GeometryGenerator::CreateGeosphere(float radius, UINT numSubdivisions, Mesh
 	for(UINT i = 0; i < 60; ++i)
 		meshData.Indices[i] = k[i];
 
+	//
 	for(UINT i = 0; i < numSubdivisions; ++i)
 		Subdivide(meshData);
 
@@ -358,30 +373,37 @@ void GeometryGenerator::CreateCylinder(float bottomRadius, float topRadius, floa
 	// Build Stacks.
 	// 
 
+	// 각 고리간 높이차를 구해준다.
 	float stackHeight = height / stackCount;
 
 	// Amount to increment radius as we move up each stack level from bottom to top.
+	// 하나당 반지름의 차이를 구해준다
 	float radiusStep = (topRadius - bottomRadius) / stackCount;
 
+	// 쌓인 블록보다 링의 갯수는 하나가 더 많다.
 	UINT ringCount = stackCount+1;
 
 	// Compute vertices for each stack ring starting at the bottom and moving up.
 	for(UINT i = 0; i < ringCount; ++i)
 	{
+		// 중심부가 원점으로 하기 위해서 원기둥의 시작 위치를 2/h로 지정하였다.
 		float y = -0.5f*height + i*stackHeight;
 		float r = bottomRadius + i*radiusStep;
 
 		// vertices of ring
+		// 360도를 파편갯수로 나눠준다.
 		float dTheta = 2.0f*XM_PI/sliceCount;
 		for(UINT j = 0; j <= sliceCount; ++j)
 		{
 			Vertex vertex;
 
+			// x z값을 사인 코사인으로 구하고 나중에 r을 곱해서 좌표를 구한다.
 			float c = cosf(j*dTheta);
 			float s = sinf(j*dTheta);
 
 			vertex.Position = XMFLOAT3(r*c, y, r*s);
 
+			// 텍스처 좌표는 텍스처 한장이 원기둥을 감싸도록 설정되었다.
 			vertex.TexC.x = (float)j/sliceCount;
 			vertex.TexC.y = 1.0f - (float)i/stackCount;
 
@@ -405,6 +427,7 @@ void GeometryGenerator::CreateCylinder(float bottomRadius, float topRadius, floa
 			//  dz/dv = (r0-r1)*sin(t)
 
 			// This is unit length.
+			// 탄젠트는 그점에서 중심방향이다.
 			vertex.TangentU = XMFLOAT3(-s, 0.0f, c);
 
 			float dr = bottomRadius-topRadius;
@@ -552,6 +575,7 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 			meshData.Vertices[i*n+j].TangentU = XMFLOAT3(1.0f, 0.0f, 0.0f);
 
 			// Stretch texture over grid.
+			// 결국 하나의 텍스처로 씌워진다.
 			meshData.Vertices[i*n+j].TexC.x = j*du;
 			meshData.Vertices[i*n+j].TexC.y = i*dv;
 		}
@@ -569,8 +593,14 @@ void GeometryGenerator::CreateGrid(float width, float depth, UINT m, UINT n, Mes
 	{
 		for(UINT j = 0; j < n-1; ++j)
 		{
+			/*
+			b ㅡ c
+			ㅣ / ㅣ
+			a ㅡ d
+			*/
 			// abc
 			meshData.Indices[k]   = i*n+j;
+			// b의 인덱스가 c의 인덱스보다 작은 이유는 수학상 사인 코사인 값을 계산해보면 반시계로 돌기 때문이다.
 			meshData.Indices[k+1] = i*n+j+1;
 			meshData.Indices[k+2] = (i+1)*n+j;
 
