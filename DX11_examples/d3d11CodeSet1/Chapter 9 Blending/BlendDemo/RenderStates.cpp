@@ -56,6 +56,8 @@ void RenderStates::InitAll(ID3D11Device* device)
 	transparentDesc.AlphaToCoverageEnable = false;
 	transparentDesc.IndependentBlendEnable = false;
 
+	// 현재 픽셀의 알파값과 1 - 알파값으로 그 픽셀을 기존 픽셀과 블렌딩시킨다.
+	// 알파값이 0.5 이면 1:1비율로 블렌딩된다.
 	transparentDesc.RenderTarget[0].BlendEnable = true;
 	transparentDesc.RenderTarget[0].SrcBlend       = D3D11_BLEND_SRC_ALPHA;
 	transparentDesc.RenderTarget[0].DestBlend      = D3D11_BLEND_INV_SRC_ALPHA;

@@ -159,6 +159,7 @@ void D3DApp::OnResize()
 	depthStencilDesc.Height    = mClientHeight;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.ArraySize = 1;
+	// ½ºÅÙ½Çºä Æ÷¸Ë
 	depthStencilDesc.Format    = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	// Use 4X MSAA? --must match swap chain MSAA values.

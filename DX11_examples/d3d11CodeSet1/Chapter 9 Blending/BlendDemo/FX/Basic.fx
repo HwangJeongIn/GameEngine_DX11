@@ -11,6 +11,7 @@ cbuffer cbPerFrame
 	DirectionalLight gDirLights[3];
 	float3 gEyePosW;
 
+	// 안개의 영향을 받는 범위 / 안개의 색상을ㄴ 정해준다.
 	float  gFogStart;
 	float  gFogRange;
 	float4 gFogColor;
@@ -72,6 +73,7 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure, uniform bool gAlphaClip, uniform bool gFogEnabled) : SV_Target
 {
 	// Interpolating normal can unnormalize it, so normalize it.
+	// 보간된 법선벡터를 정규화 시켜준다.
     pin.NormalW = normalize(pin.NormalW);
 
 	// The toEye vector is used in lighting.
@@ -92,6 +94,8 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure, unifo
 
 		if(gAlphaClip)
 		{
+			// 알파값이 0.1보다 작을때 잘라낸다.
+
 			// Discard pixel if texture alpha < 0.1.  Note that we do this
 			// test as soon as possible so that we can potentially exit the shader 
 			// early, thereby skipping the rest of the shader code.
@@ -134,9 +138,11 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure, unifo
 
 	if( gFogEnabled )
 	{
+		// 0~1값으로 제한
 		float fogLerp = saturate( (distToEye - gFogStart) / gFogRange ); 
 
 		// Blend the fog color and the lit color.
+		// 1일때 안개색 0일때 원래색
 		litColor = lerp(litColor, gFogColor, fogLerp);
 	}
 

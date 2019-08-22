@@ -369,11 +369,13 @@ void BlendApp::DrawScene()
 		Effects::BasicFX->SetMaterial(mBoxMat);
 		Effects::BasicFX->SetDiffuseMap(mBoxMapSRV);
 
+		// 철망을 그릴때는 뒤에있는 철망도 표현을 해주어야 하기 때문에 뒷면 컬링을 빼고 그린다.
 		md3dImmediateContext->RSSetState(RenderStates::NoCullRS);
 		boxTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
 		md3dImmediateContext->DrawIndexed(36, 0, 0);
 
 		// Restore default render state.
+		// 기본렌더상태로 복원
 		md3dImmediateContext->RSSetState(0);
 	}
 
@@ -423,6 +425,7 @@ void BlendApp::DrawScene()
 		Effects::BasicFX->SetMaterial(mWavesMat);
 		Effects::BasicFX->SetDiffuseMap(mWavesMapSRV);
 
+		// 블렌드 상태 설정
 		md3dImmediateContext->OMSetBlendState(RenderStates::TransparentBS, blendFactor, 0xffffffff);
 		landAndWavesTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
 		md3dImmediateContext->DrawIndexed(3*mWaves.TriangleCount(), 0, 0);

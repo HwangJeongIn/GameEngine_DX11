@@ -4,6 +4,7 @@
 
 #include "d3dUtil.h"
 
+// 텍스처 배열 생성 // 텍스처들은 모두 크기가 ㅏㄱㅌ아야 한다.
 ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 		ID3D11Device* device, ID3D11DeviceContext* context,
 		std::vector<std::wstring>& filenames,
@@ -21,6 +22,12 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	UINT size = filenames.size();
 
 	std::vector<ID3D11Texture2D*> srcTex(size);
+	
+	/*
+	각 텍스처 원소 파일부터 개별적으로 적재
+	이 텍스처들은 GPU가 사용하는 것이 아니다 // 결속 플래그 0
+	그냥 파일에서 이미지 자료를 적재하기 위한 것 // CPU에서 자원을 읽어야 하므로 용도를 예비(staging)으로 설정
+	*/
 	for(UINT i = 0; i < size; ++i)
 	{
 		D3DX11_IMAGE_LOAD_INFO loadInfo;
@@ -48,6 +55,9 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	// array has the same format/dimensions.
 	//
 
+	// 텍스처 배열을 생성한다 
+	// 텍스처 배열의 모든 원소는 형식과 크기가 동일
+
 	D3D11_TEXTURE2D_DESC texElementDesc;
 	srcTex[0]->GetDesc(&texElementDesc);
 
@@ -59,6 +69,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	texArrayDesc.Format             = texElementDesc.Format;
 	texArrayDesc.SampleDesc.Count   = 1;
 	texArrayDesc.SampleDesc.Quality = 0;
+	// 여기서 쉐이더 리소스로 사용하고 / 디폴트 사용으로 설정
 	texArrayDesc.Usage              = D3D11_USAGE_DEFAULT;
 	texArrayDesc.BindFlags          = D3D11_BIND_SHADER_RESOURCE;
 	texArrayDesc.CPUAccessFlags     = 0;
@@ -70,6 +81,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	//
 	// Copy individual texture elements into texture array.
 	//
+	// 개별 텍스처 원소를 텍스처 배열에 복사
 
 	// for each texture element...
 	for(UINT texElement = 0; texElement < size; ++texElement)
@@ -78,11 +90,25 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 		for(UINT mipLevel = 0; mipLevel < texElementDesc.MipLevels; ++mipLevel)
 		{
 			D3D11_MAPPED_SUBRESOURCE mappedTex2D;
+			// 텍스처 자원을 받아서
 			HR(context->Map(srcTex[texElement], mipLevel, D3D11_MAP_READ, 0, &mappedTex2D));
 
-			context->UpdateSubresource(texArray, 
+			context->UpdateSubresource(
+				// 대상 자원 객체
+				texArray, 
+				// 대상 자원에서 갱신할 부분자원을 가리키는 색인
+				// 밉맵 레벨과 배열 인덱스, 밉맥 레벨 수를 가지고 인덱스 계산
+				// texElement * texElementDesc.MipLevels + mipLevel
 				D3D11CalcSubresource(mipLevel, texElement, texElementDesc.MipLevels),
-				0, mappedTex2D.pData, mappedTex2D.RowPitch, mappedTex2D.DepthPitch);
+				// 갱신할 대상 부분 자원의 영역을 지정하는 D3D11_BOX // 부분 자원 전체를 갱신하고 싶다는 널값
+				0,
+				// 원본 자료를 가리키는 포인터
+				mappedTex2D.pData,
+				// 원본 자료의 한행의 바이트 단위 크기
+				mappedTex2D.RowPitch,
+				// 원본 자료의 깊이조각 하나의 바이트 단위
+				mappedTex2D.DepthPitch
+			);
 
 			context->Unmap(srcTex[texElement], mipLevel);
 		}
@@ -91,7 +117,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateTexture2DArraySRV(
 	//
 	// Create a resource view to the texture array.
 	//
-	
+	// 텍스처 배열에 대한 자원 뷰 생성
 	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
 	viewDesc.Format = texArrayDesc.Format;
 	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
