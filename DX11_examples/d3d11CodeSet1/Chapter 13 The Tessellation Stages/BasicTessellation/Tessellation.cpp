@@ -150,6 +150,7 @@ void BasicTessellation::DrawScene()
 	XMMATRIX viewProj = view*proj;
 
 	md3dImmediateContext->IASetInputLayout(InputLayouts::Pos);
+	// 테셀레이션 단계에서 쿼드를 사용고 있기 때문에 여기서도 D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST
     md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST);
  
 	UINT stride = sizeof(Vertex::Pos);
@@ -235,6 +236,8 @@ void BasicTessellation::OnMouseMove(WPARAM btnState, int x, int y)
 
 void BasicTessellation::BuildQuadPatchBuffer()
 {
+	// 점4개인 컨트롤 포인트 넣은 버퍼 생성
+
 	D3D11_BUFFER_DESC vbd;
     vbd.Usage = D3D11_USAGE_IMMUTABLE;
 	vbd.ByteWidth = sizeof(XMFLOAT3) * 4;

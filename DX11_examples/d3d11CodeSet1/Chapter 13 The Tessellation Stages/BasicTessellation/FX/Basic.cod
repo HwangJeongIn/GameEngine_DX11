@@ -113,7 +113,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -204,7 +204,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 1
                 
-                #line 150 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 150 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mul r0.x, cb0[17].w, l(1.000000)  // litColor<3>
                 mov o0.xyz, l(0,0,0,0)  // PS<0: 0f,1: 0f,2: 0f>
                 mov o0.w, r0.x  // PS<3>
@@ -288,7 +288,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -403,7 +403,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 9
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -462,7 +462,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -561,7 +561,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -676,7 +676,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 12
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -735,7 +735,7 @@ fxgroup
                 movc r6.xyz, r1.wwww, r6.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r5.xyz, r5.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r6.xyz, r6.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r7.xyz, r7.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -783,7 +783,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -882,7 +882,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -997,7 +997,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -1056,7 +1056,7 @@ fxgroup
                 movc r6.xyz, r1.wwww, r6.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r5.xyz, r5.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r6.xyz, r6.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r7.xyz, r7.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -1104,7 +1104,7 @@ fxgroup
                 movc r9.xyz, r1.wwww, r9.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r10.xyz, r1.wwww, r10.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r8.xyz, r8.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r9.xyz, r9.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r10.xyz, r10.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -1152,7 +1152,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -1251,7 +1251,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -1347,7 +1347,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 1
                 
-                #line 100 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 100 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 sample_indexable(texture2d)(float,float,float,float) r0.x, v3.xyxx, t0.wxyz, s0
                 mov r0.x, r0.x  // texColor<3:Inf>
                 
@@ -1435,7 +1435,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -1555,7 +1555,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 10
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -1617,7 +1617,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -1716,7 +1716,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -1836,7 +1836,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -1898,7 +1898,7 @@ fxgroup
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r1.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -1946,7 +1946,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -2045,7 +2045,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -2165,7 +2165,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 14
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -2227,7 +2227,7 @@ fxgroup
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r1.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -2275,7 +2275,7 @@ fxgroup
                 movc r10.xyz, r1.wwww, r10.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r11.xyz, r1.wwww, r11.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r9.xyz, r9.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r10.xyz, r10.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r11.xyz, r11.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -2323,7 +2323,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -2422,7 +2422,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -2518,7 +2518,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 1
                 
-                #line 100 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 100 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 sample_indexable(texture2d)(float,float,float,float) r0.x, v3.xyxx, t0.wxyz, s0
                 mov r0.x, r0.x  // texColor<3:Inf>
                 
@@ -2612,7 +2612,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -2732,7 +2732,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 10
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -2800,7 +2800,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -2899,7 +2899,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -3019,7 +3019,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -3087,7 +3087,7 @@ fxgroup
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r1.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -3135,7 +3135,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -3234,7 +3234,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb0[0].xyzw  // vout<4:NaN:Inf>
@@ -3354,7 +3354,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 14
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -3422,7 +3422,7 @@ fxgroup
                 movc r7.xyz, r1.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r1.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -3470,7 +3470,7 @@ fxgroup
                 movc r10.xyz, r1.wwww, r10.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r11.xyz, r1.wwww, r11.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r9.xyz, r9.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r10.xyz, r10.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r11.xyz, r11.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -3518,7 +3518,7 @@ fxgroup
                 movc r0.xyz, r1.wwww, r0.yzwy, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r1.xyz, r1.wwww, r1.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r0.xyz, r0.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r1.xyz, r1.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -3639,7 +3639,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -3764,7 +3764,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 1
                 
-                #line 87 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 87 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, -v1.xyzx
                 add r0.xyz, r0.xyzx, cb0[12].xyzx  // toEye<0:Inf,1:Inf,2:Inf>
                 
@@ -3890,7 +3890,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -4016,7 +4016,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 9
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -4075,7 +4075,7 @@ fxgroup
                 movc r1.xyz, r2.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r2.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4209,7 +4209,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -4335,7 +4335,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 12
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -4394,7 +4394,7 @@ fxgroup
                 movc r6.xyz, r2.wwww, r6.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r7.xyz, r2.wwww, r7.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r5.xyz, r5.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r6.xyz, r6.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r7.xyz, r7.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4442,7 +4442,7 @@ fxgroup
                 movc r1.xyz, r2.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r2.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4576,7 +4576,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -4702,7 +4702,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -4761,7 +4761,7 @@ fxgroup
                 movc r6.xyz, r2.wwww, r6.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r7.xyz, r2.wwww, r7.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r5.xyz, r5.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r6.xyz, r6.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r7.xyz, r7.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4809,7 +4809,7 @@ fxgroup
                 movc r9.xyz, r2.wwww, r9.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r10.xyz, r2.wwww, r10.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r8.xyz, r8.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r9.xyz, r9.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r10.xyz, r10.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4857,7 +4857,7 @@ fxgroup
                 movc r1.xyz, r2.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r2.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r2.xyz, r2.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -4991,7 +4991,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -5121,7 +5121,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 2
                 
-                #line 87 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 87 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, -v1.xyzx
                 add r0.xyz, r0.xyzx, cb0[12].xyzx  // toEye<0:Inf,1:Inf,2:Inf>
                 
@@ -5251,7 +5251,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -5382,7 +5382,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 10
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -5444,7 +5444,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -5578,7 +5578,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -5709,7 +5709,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -5771,7 +5771,7 @@ fxgroup
                 movc r7.xyz, r3.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r3.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -5819,7 +5819,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -5953,7 +5953,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -6084,7 +6084,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 14
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -6146,7 +6146,7 @@ fxgroup
                 movc r7.xyz, r3.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r3.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -6194,7 +6194,7 @@ fxgroup
                 movc r10.xyz, r3.wwww, r10.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r11.xyz, r3.wwww, r11.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r9.xyz, r9.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r10.xyz, r10.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r11.xyz, r11.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -6242,7 +6242,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -6376,7 +6376,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -6506,7 +6506,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 2
                 
-                #line 87 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 87 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, -v1.xyzx
                 add r0.xyz, r0.xyzx, cb0[12].xyzx  // toEye<0:Inf,1:Inf,2:Inf>
                 
@@ -6642,7 +6642,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -6773,7 +6773,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 10
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -6841,7 +6841,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -6975,7 +6975,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -7106,7 +7106,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 13
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -7174,7 +7174,7 @@ fxgroup
                 movc r7.xyz, r3.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r3.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -7222,7 +7222,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -7356,7 +7356,7 @@ fxgroup
                 dcl_output o3.z
                 dcl_temps 5
                 
-                #line 61 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 61 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r0.xyz, v0.xyzx
                 mov r0.w, l(1.000000)
                 dp4 r1.x, r0.xyzw, cb1[0].xyzw  // vout<4:NaN:Inf>
@@ -7487,7 +7487,7 @@ fxgroup
                 dcl_output o0.xyzw
                 dcl_temps 14
                 
-                #line 84 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 84 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 dp3 r0.x, v2.xyzx, v2.xyzx
                 rsq r0.x, r0.x
                 mul r0.xyz, r0.xxxx, v2.xyzx  // pin<7:NaN:Inf,8:NaN:Inf,9:NaN:Inf>
@@ -7555,7 +7555,7 @@ fxgroup
                 movc r7.xyz, r3.wwww, r7.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r8.xyz, r3.wwww, r8.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r6.xyz, r6.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r7.xyz, r7.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r8.xyz, r8.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -7603,7 +7603,7 @@ fxgroup
                 movc r10.xyz, r3.wwww, r10.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r11.xyz, r3.wwww, r11.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r9.xyz, r9.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r10.xyz, r10.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r11.xyz, r11.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
@@ -7651,7 +7651,7 @@ fxgroup
                 movc r1.xyz, r3.wwww, r1.xyzx, l(0,0,0,0)  // diffuse<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 movc r0.xyz, r3.wwww, r0.xyzx, l(0,0,0,0)  // spec<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 
-                #line 125 "D:\Data\Books\Book IV\Code\Chapter 13\BasicTessellation\FX\Basic.fx"
+                #line 125 "C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet1\Chapter 13 The Tessellation Stages\BasicTessellation\FX\Basic.fx"
                 mov r3.xyz, r3.xyzx  // A<0:Inf,1:Inf,2:Inf>
                 mov r1.xyz, r1.xyzx  // D<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>
                 mov r0.xyz, r0.xyzx  // S<0:NaN:Inf,1:NaN:Inf,2:NaN:Inf>

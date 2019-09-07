@@ -150,6 +150,7 @@ void BasicTessellation::DrawScene()
 	XMMATRIX viewProj = view*proj;
 
 	md3dImmediateContext->IASetInputLayout(InputLayouts::Pos);
+	// 패치리스트를 넘겨줄때는 다음과 같이 설정해줘야 한다.
     md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_16_CONTROL_POINT_PATCHLIST);
  
 	UINT stride = sizeof(Vertex::Pos);
@@ -242,6 +243,7 @@ void BasicTessellation::BuildQuadPatchBuffer()
     vbd.CPUAccessFlags = 0;
     vbd.MiscFlags = 0;
 
+	// 점 4개에 대해서 구하기 때문에 이렇게 필요 // 3차 베지에 곡선
 	XMFLOAT3 vertices[16] = 
 	{
 		// Row 0
