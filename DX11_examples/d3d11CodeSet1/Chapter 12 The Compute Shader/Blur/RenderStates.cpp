@@ -10,6 +10,9 @@ ID3D11RasterizerState* RenderStates::NoCullRS    = 0;
 ID3D11BlendState*      RenderStates::AlphaToCoverageBS = 0;
 ID3D11BlendState*      RenderStates::TransparentBS     = 0;
 
+ID3D11DepthStencilState * RenderStates::DepthDisabledSS = 0;
+
+
 void RenderStates::InitAll(ID3D11Device* device)
 {
 	//
@@ -66,6 +69,36 @@ void RenderStates::InitAll(ID3D11Device* device)
 	transparentDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 	HR(device->CreateBlendState(&transparentDesc, &TransparentBS));
+
+	//
+	// DepthDisabledSS
+	//
+
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
+	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
+
+	// Now create a second depth stencil state which turns off the Z buffer for 2D rendering.  The only difference is 
+	// that DepthEnable is set to false, all other parameters are the same as the other depth stencil state.
+	depthDisabledStencilDesc.DepthEnable = false;
+	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthDisabledStencilDesc.StencilEnable = true;
+	depthDisabledStencilDesc.StencilReadMask = 0xFF;
+	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
+	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create the state using the device.
+	HR(device->CreateDepthStencilState(&depthDisabledStencilDesc, &DepthDisabledSS));
+
+
+
 }
 
 void RenderStates::DestroyAll()

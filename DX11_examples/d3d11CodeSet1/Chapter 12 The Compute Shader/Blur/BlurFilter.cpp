@@ -59,6 +59,7 @@ void BlurFilter::Init(ID3D11Device* device, UINT width, UINT height, DXGI_FORMAT
 	mHeight = height;
 	mFormat = format;
 
+	// 압축 형식은 UAV에 사용할 수 없다.
 	// Note, compressed formats cannot be used for UAV.  We get error like:
 	// ERROR: ID3D11Device::CreateTexture2D: The format (0x4d, BC3_UNORM) 
 	// cannot be bound as an UnorderedAccessView, or cast to a format that
@@ -74,6 +75,9 @@ void BlurFilter::Init(ID3D11Device* device, UINT width, UINT height, DXGI_FORMAT
 	blurredTexDesc.SampleDesc.Count   = 1;
 	blurredTexDesc.SampleDesc.Quality = 0;
     blurredTexDesc.Usage     = D3D11_USAGE_DEFAULT;
+	// 쉐이더 자원이나 순서없는 뷰로 묶는다.
+	// 계산 쉐이더를 그래픽 작업에 활용할때는 계산쉐어더로 텍스처를 일정한 형식으로 변경(UAV필요) 
+	// >> 그텍스처를 기하구조에 입힘 // 따라서 다음과 같이 설정 
     blurredTexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
     blurredTexDesc.CPUAccessFlags = 0;
     blurredTexDesc.MiscFlags      = 0;
@@ -86,18 +90,24 @@ void BlurFilter::Init(ID3D11Device* device, UINT width, UINT height, DXGI_FORMAT
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;
+	// 계산 쉐이더 input
 	HR(device->CreateShaderResourceView(blurredTex, &srvDesc, &mBlurredOutputTexSRV));
 
+	// 출력 자원을 묶으려면 좀더 다른 형식이 필요하다.
+	// unordered access view형식으로 묶어야 한다. // 순서없는 접근 뷰
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc;
 	uavDesc.Format = format;
 	uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 	uavDesc.Texture2D.MipSlice = 0;
+	// 계산 쉐이더 output
 	HR(device->CreateUnorderedAccessView(blurredTex, &uavDesc, &mBlurredOutputTexUAV));
 
 	// Views save a reference to the texture so we can release our reference.
+	// 뷰가 텍스처에 대한 참조를 따로 저장하므로 여기서 릴리즈 시켜도 된다.
 	ReleaseCOM(blurredTex);
 }
 
+// 여기서 렌더 타겟 뷰로 렌더링 할 텍스처의 두가지 형식의 뷰가 들어온다.
 void BlurFilter::BlurInPlace(ID3D11DeviceContext* dc, 
 							 ID3D11ShaderResourceView* inputSRV, 
 	                         ID3D11UnorderedAccessView* inputUAV,
@@ -110,34 +120,49 @@ void BlurFilter::BlurInPlace(ID3D11DeviceContext* dc,
 	for(int i = 0; i < blurCount; ++i)
 	{
 		// HORIZONTAL blur pass.
+		// 수평 블러 패스를 받아서 수행
 		D3DX11_TECHNIQUE_DESC techDesc;
 		Effects::BlurFX->HorzBlurTech->GetDesc( &techDesc );
 		for(UINT p = 0; p < techDesc.Passes; ++p)
 		{
+			// 입력으로 들어온 쉐이더 리소스 뷰 // A
 			Effects::BlurFX->SetInputMap(inputSRV);
+			// 순서없는 접근 뷰 B에 저장
 			Effects::BlurFX->SetOutputMap(mBlurredOutputTexUAV);
 			Effects::BlurFX->HorzBlurTech->GetPassByIndex(p)->Apply(0, dc);
 
 			// How many groups do we need to dispatch to cover a row of pixels, where each
 			// group covers 256 pixels (the 256 is defined in the ComputeShader).
+			// 몇줄(몇그룹)이 필요한지 정해준다. // 1줄당(한그룹) 256 스레드  // 256 하드코딩되었다.
+
+			// 올림으로 해야 꽉 메울 수 있다.
 			UINT numGroupsX = (UINT)ceilf(mWidth / 256.0f);
+
+			// 수평으로 했기 때문에 그룹은 x방향으로는 mWidth를 256로 나눈 갯수
+			// y방향으로는 높이가 1이기 때문에 mHeight가 된다 // 여기서 width와 height는 클라 크기이다.
 			dc->Dispatch(numGroupsX, mHeight, 1);
 		}
 	
 		// Unbind the input texture from the CS for good housekeeping.
+		// 입력 텍스처를 떼어낸다.
 		ID3D11ShaderResourceView* nullSRV[1] = { 0 };
 		dc->CSSetShaderResources( 0, 1, nullSRV );
 
 		// Unbind output from compute shader (we are going to use this output as an input in the next pass, 
 		// and a resource cannot be both an output and input at the same time.
+		// 출력 텍스처를 떼어낸다. // 하나의 자원을 입력과 출력으로 동시에 사용 할 수 없다. 
+		// 그렇기 때문에 떼어내고 다시 붙인다.
 		ID3D11UnorderedAccessView* nullUAV[1] = { 0 };
 		dc->CSSetUnorderedAccessViews( 0, 1, nullUAV, 0 );
 	
 		// VERTICAL blur pass.
+		// 수직 블러 패스를 받아서 수행
 		Effects::BlurFX->VertBlurTech->GetDesc( &techDesc );
 		for(UINT p = 0; p < techDesc.Passes; ++p)
 		{
+			// B에 저장했던것을 입력으로 받는다.
 			Effects::BlurFX->SetInputMap(mBlurredOutputTexSRV);
+			// A에 최종 블러효과를 넣어준다. // 최종적으로 렌더링할 텍스처의 UAV에 담긴다.
 			Effects::BlurFX->SetOutputMap(inputUAV);
 			Effects::BlurFX->VertBlurTech->GetPassByIndex(p)->Apply(0, dc);
 

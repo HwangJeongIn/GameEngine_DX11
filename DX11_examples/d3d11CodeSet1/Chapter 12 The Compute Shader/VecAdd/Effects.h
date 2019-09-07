@@ -101,6 +101,7 @@ public:
 
 	ID3DX11EffectTechnique* VecAddTech;
 
+	// 리소스 자료형 // 출력에 대해서는 순서없는 접근뷰로 지정
 	ID3DX11EffectShaderResourceVariable* InputA;
 	ID3DX11EffectShaderResourceVariable* InputB;
 	ID3DX11EffectUnorderedAccessViewVariable* Output;

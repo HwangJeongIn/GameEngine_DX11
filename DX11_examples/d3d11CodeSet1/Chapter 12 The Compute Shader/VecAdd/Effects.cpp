@@ -84,6 +84,7 @@ VecAddEffect::VecAddEffect(ID3D11Device* device, const std::wstring& filename)
 {
 	VecAddTech  = mFX->GetTechniqueByName("VecAdd");
 
+	// 쉐이더 상수 버퍼의 변수들과 연결시켜준다.
 	InputA = mFX->GetVariableByName("gInputA")->AsShaderResource();
 	InputB = mFX->GetVariableByName("gInputB")->AsShaderResource();
 	Output = mFX->GetVariableByName("gOutput")->AsUnorderedAccessView();

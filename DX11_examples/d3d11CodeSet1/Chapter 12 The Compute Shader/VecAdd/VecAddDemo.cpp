@@ -129,6 +129,7 @@ void VecAddApp::DoComputeWork()
 
 	Effects::VecAddFX->SetInputA(mInputASRV);
 	Effects::VecAddFX->SetInputB(mInputBSRV);
+	// 쉐이더로 올려주는 작업
 	Effects::VecAddFX->SetOutput(mOutputUAV);
 
 	Effects::VecAddFX->VecAddTech->GetDesc( &techDesc );
@@ -146,18 +147,27 @@ void VecAddApp::DoComputeWork()
 
 	// Unbind output from compute shader (we are going to use this output as an input in the next pass, 
 	// and a resource cannot be both an output and input at the same time.
+	// 계산쉐이더의 출력에 대해서 언바인드 시킨다. 우리는 다음패스에서 출력을 입력으로 사용할 것인데,
+	// 그리고 소스는 출력과 입력이 동시에 될 수 없다.
 	ID3D11UnorderedAccessView* nullUAV[1] = { 0 };
+	// 순서없는 접근 뷰를 널로 초기화
 	md3dImmediateContext->CSSetUnorderedAccessViews( 0, 1, nullUAV, 0 );
 
 	// Disable compute shader.
+	// 계산쉐이더를 비활성화
 	md3dImmediateContext->CSSetShader(0, 0, 0);
 
 	std::ofstream fout("results.txt");
 
 	// Copy the output buffer to system memory.
+	// 출력버퍼를 시스템 메모리에 복사한다.
+	// mOutputBuffer > mOutputDebugBuffer
+	// 다른 입력버퍼와 다르게 mOutputBuffer는 만들어주고 지워주지 않았다. 
+	// 이를 통해서 바로 복사를 할 수 있다.
 	md3dImmediateContext->CopyResource(mOutputDebugBuffer, mOutputBuffer);
 
 	// Map the data for reading.
+	// 버퍼를 읽기 위해서 map함수 사용
 	D3D11_MAPPED_SUBRESOURCE mappedData; 
     md3dImmediateContext->Map(mOutputDebugBuffer, 0, D3D11_MAP_READ, 0, &mappedData);
 
@@ -174,6 +184,12 @@ void VecAddApp::DoComputeWork()
 	fout.close();
 }
 
+/*
+계산 쉐어더로 텍스처를 처리하는 경우 일반적으로 처리를 마친 텍스처를 기하구조에 입혀서 화면에 효시 // 확인가능
+일반적인 GPGPU프로그래밍에서는 계산 쉐이더의 결과를 아예 표시하지 않는다.
+그렇기 때문에 결과를 확인하려면 GPU메모리에 담긴 자료를 시스템 메모리로 복사해와야한다.
+D3D11_USAGE_STAGING / D3D11_CPU_ACCESS_READ 플래그를 사용하여 컨텍스트의 CopyResource메소드를 이용해서 복사
+*/
 void VecAddApp::BuildBuffersAndViews()
 {
 	std::vector<Data> dataA(mNumElements);
@@ -194,6 +210,7 @@ void VecAddApp::BuildBuffersAndViews()
     inputDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     inputDesc.CPUAccessFlags = 0;
 	inputDesc.StructureByteStride = sizeof(Data);
+	// 구조적버퍼를 사용하기 위한 플래그
     inputDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
 
     D3D11_SUBRESOURCE_DATA vinitDataA;
@@ -212,6 +229,7 @@ void VecAddApp::BuildBuffersAndViews()
 	D3D11_BUFFER_DESC outputDesc;
     outputDesc.Usage = D3D11_USAGE_DEFAULT;
     outputDesc.ByteWidth = sizeof(Data) * mNumElements;
+	// 계산쉐이더가 자료를 기록할 수 있도록 설정 // 읽기 - 쓰기 버퍼
     outputDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
     outputDesc.CPUAccessFlags = 0;
 	outputDesc.StructureByteStride = sizeof(Data);
@@ -220,12 +238,17 @@ void VecAddApp::BuildBuffersAndViews()
     HR(md3dDevice->CreateBuffer(&outputDesc, 0, &mOutputBuffer));
 
 	// Create a system memory version of the buffer to read the results back from.
+	// GPU결과를 CPU로 읽기 위한 D3D11_USAGE_STAGING / D3D11_CPU_ACCESS_READ
 	outputDesc.Usage = D3D11_USAGE_STAGING;
 	outputDesc.BindFlags = 0;
 	outputDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 	HR(md3dDevice->CreateBuffer(&outputDesc, 0, &mOutputDebugBuffer));
 
-
+	// 뷰를 생성
+	// 생성한 뷰들을 상수버퍼로 설정해준다
+	
+	// 구조적버퍼에 대한 쉐이더 자원뷰나 순서 없는 뷰를 생성할때 
+	// format 속성에 DXGI_FORMAT_UNKNOWN로 설정
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
@@ -244,6 +267,8 @@ void VecAddApp::BuildBuffersAndViews()
 	uavDesc.Buffer.Flags = 0;
 	uavDesc.Buffer.NumElements = mNumElements;
 
+	// 뷰를 생성할때 버퍼를 같이 넣어준다. 
+	// 나중에 뷰를 쉐이더로 올려줄때 버퍼도 같이 영향을 받을 듯
 	md3dDevice->CreateUnorderedAccessView(mOutputBuffer, &uavDesc, &mOutputUAV);
 
 

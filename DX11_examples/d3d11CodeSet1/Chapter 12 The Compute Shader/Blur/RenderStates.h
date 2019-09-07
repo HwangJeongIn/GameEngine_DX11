@@ -20,6 +20,8 @@ public:
 	 
 	static ID3D11BlendState* AlphaToCoverageBS;
 	static ID3D11BlendState* TransparentBS;
+
+	static ID3D11DepthStencilState * DepthDisabledSS;
 };
 
 #endif // RENDERSTATES_H

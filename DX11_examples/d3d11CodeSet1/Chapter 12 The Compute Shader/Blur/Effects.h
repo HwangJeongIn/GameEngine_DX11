@@ -97,6 +97,7 @@ public:
 
 	void SetWeights(const float weights[9])           { Weights->SetFloatArray(weights, 0, 9); }
 	void SetInputMap(ID3D11ShaderResourceView* tex)   { InputMap->SetResource(tex); }
+	// 출력 자원을 계산 쉐이더에 묶는 방법은 순서 없는 접근 뷰의 종류를 사용해서 묶어야 한다.
 	void SetOutputMap(ID3D11UnorderedAccessView* tex) { OutputMap->SetUnorderedAccessView(tex); }
 
 	ID3DX11EffectTechnique* HorzBlurTech;
@@ -104,6 +105,7 @@ public:
 
 	ID3DX11EffectScalarVariable* Weights;
 	ID3DX11EffectShaderResourceVariable* InputMap;
+	// 계산쉐이더 출력자원 : UAV로 설정해야함
 	ID3DX11EffectUnorderedAccessViewVariable* OutputMap;
 };
 #pragma endregion

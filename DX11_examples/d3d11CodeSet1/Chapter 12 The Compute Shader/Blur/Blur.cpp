@@ -51,6 +51,7 @@ private:
 	void UpdateWaves();
 	void DrawWrapper();
 	void DrawScreenQuad();
+	void DrawScreenQuad2();
 	float GetHillHeight(float x, float z)const;
 	XMFLOAT3 GetHillNormal(float x, float z)const;
 	void BuildLandGeometryBuffers();
@@ -245,7 +246,11 @@ void BlurApp::OnResize()
 	D3DApp::OnResize();
 
 	// Recreate the resources that depend on the client area size.
+	// 화면 밖 텍스처의 크기를 조정하고 뷰들(렌더대상뷰 / 쉐이더 자원 뷰 / 순서 없는뷰) 를 다시 만든다.
+	// 기존 백버퍼가 아닌 바깥에서 렌더링한 텍스처를 렌더링
 	BuildOffscreenViews();
+
+	// B텍스처를 다시 만들어준다. // 기존 백버퍼와 똑같이
 	mBlur.Init(md3dDevice, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
@@ -340,6 +345,7 @@ void BlurApp::DrawScene()
 	// Render to our offscreen texture.  Note that we can use the same depth/stencil buffer
 	// we normally use since our offscreen texture matches the dimensions.  
 
+	// 렌더타겟을 오프스크린으로 맞춘다 // 
 	ID3D11RenderTargetView* renderTargets[1] = {mOffscreenRTV};
 	md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDepthStencilView);
 
@@ -350,6 +356,7 @@ void BlurApp::DrawScene()
 	// Draw the scene to the offscreen texture
 	//
 
+	// 씬을 화면밖 텍스처에 렌더링 해준다.
 	DrawWrapper();
 
 	//
@@ -357,10 +364,17 @@ void BlurApp::DrawScene()
 	// the compute shader for blurring, so we must unbind it from the OM stage before we
 	// can use it as an input into the compute shader.
 	//
+
+	// 오프스트린은 블러 효과를 적용해야하므로 렌더타겟에서 언바인드 시켜준다.
 	renderTargets[0] = mRenderTargetView;
+	
+	// 후면버퍼에 대한 렌더 타겟 뷰를 렌더링 파이프라인의 출력 병합기 단계에서 
+	// 묶으면 그리기 호출시 Direct3D가 장면을 후면 버퍼에 렌더링하게 된다.
 	md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDepthStencilView);
 
 	//mBlur.SetGaussianWeights(4.0f);
+
+	// 블러 효과 적용해주고
 	mBlur.BlurInPlace(md3dImmediateContext, mOffscreenSRV, mOffscreenUAV, 4);
 
 	//
@@ -370,9 +384,23 @@ void BlurApp::DrawScene()
 	md3dImmediateContext->ClearRenderTargetView(mRenderTargetView, reinterpret_cast<const float*>(&Colors::Silver));
 	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	// 기존에 렌더링한 씬을 블러 효과를 주었고 최종 블러 텍스처를 적용해서 후면버퍼에 그려준다.
 	DrawScreenQuad();
 
+	md3dImmediateContext->OMSetDepthStencilState(RenderStates::DepthDisabledSS, 0);
+	// 미니맵 테스트
+	DrawScreenQuad2();
+	md3dImmediateContext->OMSetDepthStencilState(0, 0);
+
+	// 후면버퍼를 제시(present) 
 	HR(mSwapChain->Present(0, 0));
+
+	/*
+	만약에 다른 텍스처를 생성 > 렌더타겟뷰를 만들어서 출력 병합기 단계에서 묶으면, 렌더링 할 수 있다.
+	다만, 후면버퍼가 아니기 때문에 present가 수행되어도 렌더링되지 않는다. 
+	하지만 텍스처 타겟 렌더링을 수행 후, 후면버퍼에 입히면 특수효과 구현가능
+	// 미니맵 / 그림자 / 화면 공간 주변광 차폐 / 입방체 맵을 이용한 동적반사
+	*/
 }
 
 void BlurApp::OnMouseDown(WPARAM btnState, int x, int y)
@@ -570,11 +598,46 @@ void BlurApp::DrawScreenQuad()
 		Effects::BasicFX->SetWorldInvTranspose(identity);
 		Effects::BasicFX->SetWorldViewProj(identity);
 		Effects::BasicFX->SetTexTransform(identity);
+		// 최종 렌더링할 블러효과의 쉐이더 리소스뷰
 		Effects::BasicFX->SetDiffuseMap(mBlur.GetBlurredOutput());
 
 		texOnlyTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
 		md3dImmediateContext->DrawIndexed(6, 0, 0);
     }
+}
+
+void BlurApp::DrawScreenQuad2()
+{
+	md3dImmediateContext->IASetInputLayout(InputLayouts::Basic32);
+	md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	UINT stride = sizeof(Vertex::Basic32);
+	UINT offset = 0;
+
+	XMMATRIX rotationZ = XMMatrixRotationZ(MathHelper::Pi * 0.5);
+	XMMATRIX scale = XMMatrixScaling(.5, .5, 1);
+	XMMATRIX identity = XMMatrixIdentity();
+
+	
+
+	ID3DX11EffectTechnique* texOnlyTech = Effects::BasicFX->Light0TexTech;
+	D3DX11_TECHNIQUE_DESC techDesc;
+
+	texOnlyTech->GetDesc(&techDesc);
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		md3dImmediateContext->IASetVertexBuffers(0, 1, &mScreenQuadVB, &stride, &offset);
+		md3dImmediateContext->IASetIndexBuffer(mScreenQuadIB, DXGI_FORMAT_R32_UINT, 0);
+
+		Effects::BasicFX->SetWorld(identity * scale);
+		Effects::BasicFX->SetWorldInvTranspose(identity * scale);
+		Effects::BasicFX->SetWorldViewProj(identity * scale);
+		Effects::BasicFX->SetTexTransform(identity);
+		Effects::BasicFX->SetDiffuseMap(mBlur.GetBlurredOutput());
+
+		texOnlyTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
+		md3dImmediateContext->DrawIndexed(6, 0, 0);
+	}
 }
 
 float BlurApp::GetHillHeight(float x, float z)const
@@ -808,6 +871,8 @@ void BlurApp::BuildOffscreenViews()
 	texDesc.SampleDesc.Count   = 1;  
 	texDesc.SampleDesc.Quality = 0;  
 	texDesc.Usage          = D3D11_USAGE_DEFAULT;
+	// 화면밖 텍스처를 렌더링 하기 때문에 이와 같은 플래그가 필요
+	// 출력사용 : D3D11_BIND_UNORDERED_ACCESS / 쉐이더 자원 : D3D11_BIND_SHADER_RESOURCE / 렌더타겟 : D3D11_BIND_RENDER_TARGET
 	texDesc.BindFlags      = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	texDesc.CPUAccessFlags = 0; 
 	texDesc.MiscFlags      = 0;
@@ -817,6 +882,7 @@ void BlurApp::BuildOffscreenViews()
 
 	// Null description means to create a view to all mipmap levels using 
 	// the format the texture was created with.
+	// 화면 밖 텍스처의 크기를 조정하고 뷰들(렌더대상뷰 / 쉐이더 자원 뷰 / 순서 없는뷰) 를 다시 만든다.
 	HR(md3dDevice->CreateShaderResourceView(offscreenTex, 0, &mOffscreenSRV));
 	HR(md3dDevice->CreateRenderTargetView(offscreenTex, 0, &mOffscreenRTV));
 	HR(md3dDevice->CreateUnorderedAccessView(offscreenTex, 0, &mOffscreenUAV));

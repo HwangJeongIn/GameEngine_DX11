@@ -148,6 +148,7 @@ void D3DApp::OnResize()
 	HR(mSwapChain->ResizeBuffers(1, mClientWidth, mClientHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
 	ID3D11Texture2D* backBuffer;
 	HR(mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer)));
+	// 스왑체인에서 후면버퍼 텍스처를 받아오고 그 후면버퍼 텍스처에 대한 뷰를 생성한다.
 	HR(md3dDevice->CreateRenderTargetView(backBuffer, 0, &mRenderTargetView));
 	ReleaseCOM(backBuffer);
 
