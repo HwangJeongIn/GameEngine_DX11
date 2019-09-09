@@ -214,6 +214,7 @@ void CameraApp::OnResize()
 {
 	D3DApp::OnResize();
 
+	// 이제 카메라 클래스 내부에서 프로젝션과 뷰 행렬을 갱신한다.
 	mCam.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 }
 
@@ -404,12 +405,15 @@ void CameraApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void CameraApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
+	// 왼쪽 클릭이 된 상태에서
 	if( (btnState & MK_LBUTTON) != 0 )
 	{
 		// Make each pixel correspond to a quarter of a degree.
+		// 이동한 x와 y에 대해서 계산해주고 // 최종적으로 라디안 각도
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 
+		// 회전시킨다.
 		mCam.Pitch(dy);
 		mCam.RotateY(dx);
 	}

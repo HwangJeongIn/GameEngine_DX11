@@ -1,9 +1,9 @@
-﻿  fxc compile for debug: C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\FX\Basic.fx
+﻿  fxc compile for debug: C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\FX\Basic.fx
   Microsoft (R) Direct3D Shader Compiler 9.29.952.3111
   Copyright (C) Microsoft Corporation 2002-2009. All rights reserved.
   
   compilation succeeded; see Basic.cod
-  compilation succeeded; see C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\FX\Basic.fxo
+  compilation succeeded; see C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\FX\Basic.fxo
   Vertex.cpp
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\dxgitype.h(12): warning C4005: 'DXGI_STATUS_OCCLUDED': macro redefinition
   c:\program files (x86)\windows kits\8.1\include\shared\winerror.h(50092): note: see previous definition of 'DXGI_STATUS_OCCLUDED'
@@ -883,11 +883,11 @@ c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathvector.i
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathmisc.inl(518): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
 c:\program files (x86)\microsoft directx sdk (june 2010)\include\xnamathmisc.inl(519): warning C4838: conversion from 'unsigned int' to 'INT' requires a narrowing conversion
   Generating Code...
-Effects11d.lib(d3dxGlobal.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(d3dxGlobal.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-Effects11d.lib(EffectAPI.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectAPI.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-Effects11d.lib(EffectLoad.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectLoad.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-Effects11d.lib(EffectNonRuntime.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectNonRuntime.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-Effects11d.lib(EffectReflection.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectReflection.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-Effects11d.lib(EffectRuntime.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectRuntime.obj)' or at 'C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
-  Camera.vcxproj -> C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Camera.exe
-  Camera.vcxproj -> C:\Users\user\Desktop\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Camera.pdb (Full PDB)
+Effects11d.lib(d3dxGlobal.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(d3dxGlobal.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+Effects11d.lib(EffectAPI.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectAPI.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+Effects11d.lib(EffectLoad.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectLoad.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+Effects11d.lib(EffectNonRuntime.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectNonRuntime.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+Effects11d.lib(EffectReflection.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectReflection.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+Effects11d.lib(EffectRuntime.obj) : warning LNK4099: PDB 'Effects11.pdb' was not found with 'Effects11d.lib(EffectRuntime.obj)' or at 'C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Effects11.pdb'; linking object as if no debug info
+  Camera.vcxproj -> C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Camera.exe
+  Camera.vcxproj -> C:\Users\user\Documents\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet2\Chapter 14 Building a First Person Camera\Camera\Debug\Camera.pdb (Full PDB)

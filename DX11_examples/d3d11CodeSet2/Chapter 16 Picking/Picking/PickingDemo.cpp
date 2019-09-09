@@ -226,17 +226,19 @@ void PickingApp::DrawScene()
 		md3dImmediateContext->RSSetState(0);
 
 		// Draw just the picked triangle again with a different material to highlight it.
-
+		// 선택된 삼각형을 다른 재질로 그려준다.
 		if(mPickedTriangle != -1)
 		{
 			// Change depth test from < to <= so that if we draw the same triangle twice, it will still pass
 			// the depth test.  This is because we redraw the picked triangle with a different material
 			// to highlight it.  
-
+			// 같은 삼각형을 두번 그리는 것이므로 깊이 판정을  < 에서 <= 로 바꾼다
+			// 그래야 삼각형이 깊이 판정을 통과 / 삼각형을 두번 그리는 이유는 강조하기 위해서
 			md3dImmediateContext->OMSetDepthStencilState(RenderStates::LessEqualDSS, 0);
 
 			Effects::BasicFX->SetMaterial(mPickedTriangleMat);
 			activeMeshTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
+			// 삼각형 인덱스만큼 띄워주고 3개를 그려준다.
 			md3dImmediateContext->DrawIndexed(3, 3*mPickedTriangle, 0);
 
 			// restore default
@@ -321,6 +323,7 @@ void PickingApp::BuildMeshGeometryBuffers()
 		vMax = XMVectorMax(vMax, P);
 	}
 	
+	// 메쉬의 로컬공간내에서 바운딩박스를 씌워준다.
 	XMStoreFloat3(&mMeshBox.Center, 0.5f*(vMin+vMax));
 	XMStoreFloat3(&mMeshBox.Extents, 0.5f*(vMax-vMin));
 
@@ -364,9 +367,12 @@ void PickingApp::BuildMeshGeometryBuffers()
 
 void PickingApp::Pick(int sx, int sy)
 {
+	// 먼저 투영행렬을 가지고 온다. 이 투영행렬의 00 11 성분이 필요하다
 	XMMATRIX P = mCam.Proj();
 
 	// Compute picking ray in view space.
+	// 뷰포트에서 뷰 스페이스로의 변환을 시작한다.
+	// 이는 각각 x와 y의 기울기인데 최종적으로 z = 1로 설정되면 반직선을 만들 수 있다.
 	float vx = (+2.0f*sx/mClientWidth  - 1.0f)/P(0,0);
 	float vy = (-2.0f*sy/mClientHeight + 1.0f)/P(1,1);
 
@@ -375,32 +381,48 @@ void PickingApp::Pick(int sx, int sy)
 	XMVECTOR rayDir    = XMVectorSet(vx, vy, 1.0f, 0.0f);
 
 	// Tranform ray to local space of Mesh.
+	// 만들어진 반직선을 메쉬 로컬스페이스로 보내야 한다.
+	// 그러기 위해서는 기존 뷰스페이스에서 월드공간으로 변환한후 월드공간에서 메쉬 공간으로 들어가야 한다.
 	XMMATRIX V = mCam.View();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(V), V);
 
 	XMMATRIX W = XMLoadFloat4x4(&mMeshWorld);
 	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(W), W);
 
+	// 뷰 >(뷰행렬의 역행렬)> 월드 >(메쉬의 월드 역행렬)> 메쉬
+	// 메쉬 >(메쉬의 월드 행렬)> 월드 >(뷰행렬)> 뷰 // 이방법을 쓰지 않는 이유는 메쉬에 많은 정점들에대해서 적용해야하기 때문에 성능이 떨어진다.
 	XMMATRIX toLocal = XMMatrixMultiply(invView, invWorld);
 
+	// 점에 대해서는 XMVector3TransformCoord // w = 1
 	rayOrigin = XMVector3TransformCoord(rayOrigin, toLocal);
+	// 방향에 대해서는 XMVector3TransformNormal // w = 0
 	rayDir = XMVector3TransformNormal(rayDir, toLocal);
 
 	// Make the ray direction unit length for the intersection tests.
+	// 교차 판정을 위해 방향을 정규화시켜준다
 	rayDir = XMVector3Normalize(rayDir);
 
 	// If we hit the bounding box of the Mesh, then we might have picked a Mesh triangle,
 	// so do the ray/triangle tests.
 	//
+	// 반직선이 메쉬의 바운딩 박스를 타격한다면 우리는 메쉬의 삼각형들을 돌면서 반직선과 삼각형 테스트를 한다.
+
 	// If we did not hit the bounding box, then it is impossible that we hit 
 	// the Mesh, so do not waste effort doing ray/triangle tests.
+	// 바운딩 박스를 치지않았다면 테스트하지 않는다.
+
+	// 러프하게 바운딩박스 테스트 > 실제 삼각형들에 대해서 확인
 
 	// Assume we have not picked anything yet, so init to -1.
+	// 만약 우리가 아무것도 찾지 못했다면 -1로 설정
 	mPickedTriangle = -1;
 	float tmin = 0.0f;
+
+	// 바운딩박스 충돌 체크 // 현재 반직선이 메쉬 로컬공간안으로 들어왔기 때문에 가능
 	if(XNA::IntersectRayAxisAlignedBox(rayOrigin, rayDir, &mMeshBox, &tmin))
 	{
 		// Find the nearest ray/triangle intersection.
+		// 제일 가까운 ray/triangle 교차점을 찾는다.
 		tmin = MathHelper::Infinity;
 		for(UINT i = 0; i < mMeshIndices.size()/3; ++i)
 		{
@@ -410,14 +432,18 @@ void PickingApp::Pick(int sx, int sy)
 			UINT i2 = mMeshIndices[i*3+2];
 
 			// Vertices for this triangle.
+			// 메시의 기하구조의 본사본을 시스템 메모리에 유지해야 한다.
 			XMVECTOR v0 = XMLoadFloat3(&mMeshVertices[i0].Pos);
 			XMVECTOR v1 = XMLoadFloat3(&mMeshVertices[i1].Pos);
 			XMVECTOR v2 = XMLoadFloat3(&mMeshVertices[i2].Pos);
 
 			// We have to iterate over all the triangles in order to find the nearest intersection.
+			// 모든 삼각형에 대해서 순회해야한다 // 가장 가까운 교차점을 찾기 위해서
 			float t = 0.0f;
+
 			if(XNA::IntersectRayTriangle(rayOrigin, rayDir, v0, v1, v2, &t))
 			{
+				// 더 가까운 거리에 있는 삼각형이라면 갱신후 초기화 시켜준다.
 				if( t < tmin )
 				{
 					// This is the new nearest picked triangle.

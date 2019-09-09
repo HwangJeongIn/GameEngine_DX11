@@ -42,8 +42,11 @@ struct VertexIn
 	float3 PosL     : POSITION;
 	float3 NormalL  : NORMAL;
 	float2 Tex      : TEXCOORD;
+	// 인스턴스별 월드 메트릭스 / 색
 	row_major float4x4 World  : WORLD;
+	// 최종적으로 픽셀쉐이더로 넘어감
 	float4 Color    : COLOR;
+	// 인스턴스 아이디 // 활용법 : 텍스처 배열의 색인을 사용 // 개별적인 텍스처 적용 가능
 	uint InstanceId : SV_InstanceID;
 };
 
@@ -124,6 +127,7 @@ float4 PS(VertexOut pin, uniform int gLightCount, uniform bool gUseTexure, unifo
 			ComputeDirectionalLight(gMaterial, gDirLights[i], pin.NormalW, toEye, 
 				A, D, S);
 
+			// 구한 값에 픽셀쉐이더로 넘어온 색을 곱해준다.
 			ambient += A*pin.Color;
 			diffuse += D*pin.Color;
 			spec    += S;

@@ -165,6 +165,7 @@ void InstancingAndCullingApp::OnResize()
 	mCam.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
 	// Build the frustum from the projection matrix in view space.
+	// 투영행렬을 가지고 절두체를 구해준다
 	ComputeFrustumFromProjection(&mCamFrustum, &mCam.Proj());
 }
 
@@ -203,32 +204,40 @@ void InstancingAndCullingApp::UpdateScene(float dt)
 		XMVECTOR detView = XMMatrixDeterminant(mCam.View());
 		XMMATRIX invView = XMMatrixInverse(&detView, mCam.View());
 	
+		// 인스턴스 버퍼에 자료를 기록하기 위해 시스템 메모리에 매핑한다.
 		D3D11_MAPPED_SUBRESOURCE mappedData; 
 		md3dImmediateContext->Map(mInstancedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData);
 
+		// 인스턴스 데이터로 캐스팅해서 받는다.
 		InstancedData* dataView = reinterpret_cast<InstancedData*>(mappedData.pData);
 
 		for(UINT i = 0; i < mInstancedData.size(); ++i)
 		{
+			// 월드와 월드 역행렬을 구한다. // 월드 역행렬은 이 인스턴스 로컬좌표계로 들어가기 위한 행렬이다.
 			XMMATRIX W = XMLoadFloat4x4(&mInstancedData[i].World);
 			XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(W), W);
 
 			// View space to the object's local space.
+			// 현재 시야를 뷰의 역행렬을 곱해서 view space으로 바꾸고 다시 메쉬의 역행렬을 곱해서 메쉬의 로컬좌표계로 들어간다.
 			XMMATRIX toLocal = XMMatrixMultiply(invView, invWorld);
 		
 			// Decompose the matrix into its individual parts.
+			// 행렬을 개별적인 파트로 분해한다.
 			XMVECTOR scale;
 			XMVECTOR rotQuat;
 			XMVECTOR translation;
 			XMMatrixDecompose(&scale, &rotQuat, &translation, toLocal);
 
 			// Transform the camera frustum from view space to the object's local space.
+			// 최종 메쉬의 로컬공간으로 설정된 절두체를 구해준다.
 			XNA::Frustum localspaceFrustum;
 			XNA::TransformFrustum(&localspaceFrustum, &mCamFrustum, XMVectorGetX(scale), rotQuat, translation);
 
 			// Perform the box/frustum intersection test in local space.
+			// 교차 판정을 해준다.
 			if(XNA::IntersectAxisAlignedBoxFrustum(&mSkullBox, &localspaceFrustum) != 0)
 			{
+				// 교차 되었을때 앞에서 갱신해준다.
 				// Write the instance data to dynamic VB of the visible objects.
 				dataView[mVisibleObjectCount++] = mInstancedData[i];
 			}
@@ -243,6 +252,7 @@ void InstancingAndCullingApp::UpdateScene(float dt)
 
 		InstancedData* dataView = reinterpret_cast<InstancedData*>(mappedData.pData);
 
+		// 컬링을 하지않을떄 모든 것들을 다 그려준다.
 		for(UINT i = 0; i < mInstancedData.size(); ++i)
 		{
 			dataView[mVisibleObjectCount++] = mInstancedData[i];
@@ -267,9 +277,11 @@ void InstancingAndCullingApp::DrawScene()
 	md3dImmediateContext->IASetInputLayout(InputLayouts::InstancedBasic32);
     md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
  
+	// 정점자료와 인스턴스자료를 따로 저장하기 위해서
 	UINT stride[2] = {sizeof(Vertex::Basic32), sizeof(InstancedData)};
     UINT offset[2] = {0,0};
 
+	// 버텍스 버퍼도 2개를 생성한다.
 	ID3D11Buffer* vbs[2] = {mSkullVB, mInstancedBuffer};
  
 	XMMATRIX view     = mCam.View();
@@ -287,7 +299,8 @@ void InstancingAndCullingApp::DrawScene()
 	for(UINT p = 0; p < techDesc.Passes; ++p)
     {
 		// Draw the skull.
-
+		// 0 슬롯부터 2개의 버텍스 버퍼를 넣어준다.
+		// 버텍스 정보가 배열이기 때문에 stride offset 모두 배열로 들어가야한다.
 		md3dImmediateContext->IASetVertexBuffers(0, 2, vbs, stride, offset);
 		md3dImmediateContext->IASetIndexBuffer(mSkullIB, DXGI_FORMAT_R32_UINT, 0);
 
@@ -300,7 +313,18 @@ void InstancingAndCullingApp::DrawScene()
 		Effects::InstancedBasicFX->SetMaterial(mSkullMat);
 
 		activeTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
-		md3dImmediateContext->DrawIndexedInstanced(mSkullIndexCount, mVisibleObjectCount, 0, 0, 0);
+		// 준비된 정점자료와 인스턴스별 자료로 인스턴스들을 그릴때는 다음과 같은 메소드 사용
+		md3dImmediateContext->DrawIndexedInstanced(
+			// 하나의 인스턴스를 정의하는 인덱스의 갯수
+			mSkullIndexCount,
+			// 그릴 인스턴스의 개수 // 절두체 컬링에 의해서 나온 수
+			mVisibleObjectCount,
+			// 인덱스 버퍼에서 그리기에 사용할 첫원소의 색인
+			0,
+			// 기준 정점 위치, 즉 각 인덱스로 정점을 갖고 올때 인덱스에 더할 기준값
+			0,
+			// 인스턴스 버퍼에서 읽어올 첫 원소의 인덱스
+			0);
 	}
 	
 	HR(mSwapChain->Present(0, 0));
@@ -353,6 +377,7 @@ void InstancingAndCullingApp::BuildSkullGeometryBuffers()
 	fin >> ignore >> tcount;
 	fin >> ignore >> ignore >> ignore >> ignore;
 	
+	// 바운딩 박스를 계산하기 위해서 가장 작은값과 가장 큰값으로 설정한다.
 	XMFLOAT3 vMinf3(+MathHelper::Infinity, +MathHelper::Infinity, +MathHelper::Infinity);
 	XMFLOAT3 vMaxf3(-MathHelper::Infinity, -MathHelper::Infinity, -MathHelper::Infinity);
 	
@@ -366,10 +391,13 @@ void InstancingAndCullingApp::BuildSkullGeometryBuffers()
 		
 		XMVECTOR P = XMLoadFloat3(&vertices[i].Pos);
 		
+		// 두 벡터를 비교해서 원소중 가장 작은값과 가장 큰값으로 설정해준다.
 		vMin = XMVectorMin(vMin, P);
 		vMax = XMVectorMax(vMax, P);
 	}
 	
+	// 최종적으로 가장 작은 점과 가장 큰점이 나왔고 그 점들을 통해서 중심점과
+	// 중심점에서 각 면까지의 거리를 설정해준다.
 	XMStoreFloat3(&mSkullBox.Center, 0.5f*(vMin+vMax));
 	XMStoreFloat3(&mSkullBox.Extents, 0.5f*(vMax-vMin));
 
@@ -448,6 +476,9 @@ void InstancingAndCullingApp::BuildInstancedBuffer()
 		}
 	}
 	
+	// 인스턴스 버퍼는 동적 버퍼로 만들어주는데 
+	// 이는 매 프레임마다 가시적인 인스턴스들을 인스턴스 별 자료에 복사해야하기 때문이다.
+	// 또 예를 들어 각 인스턴스들이 계속해서 움직인다면 세계행렬을 계속 갱신해야하는데, 동적 버퍼를 이용하면 수월하다.
 	D3D11_BUFFER_DESC vbd;
     vbd.Usage = D3D11_USAGE_DYNAMIC;
 	vbd.ByteWidth = sizeof(InstancedData) * mInstancedData.size();

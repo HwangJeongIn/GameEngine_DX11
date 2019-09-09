@@ -20,12 +20,14 @@ public:
 	~Camera();
 
 	// Get/Set world camera position.
+	// 위치 get set
 	XMVECTOR GetPositionXM()const;
 	XMFLOAT3 GetPosition()const;
 	void SetPosition(float x, float y, float z);
 	void SetPosition(const XMFLOAT3& v);
 	
 	// Get camera basis vectors.
+	// 각종 방향벡터 get // 로컬 방향벡터
 	XMVECTOR GetRightXM()const;
 	XMFLOAT3 GetRight()const;
 	XMVECTOR GetUpXM()const;
@@ -34,6 +36,7 @@ public:
 	XMFLOAT3 GetLook()const;
 
 	// Get frustum properties.
+	// 절두체 속성 get
 	float GetNearZ()const;
 	float GetFarZ()const;
 	float GetAspect()const;
@@ -41,6 +44,7 @@ public:
 	float GetFovX()const;
 
 	// Get near and far plane dimensions in view space coordinates.
+	// 뷰스페이스 좌표계에서 가깝고 먼 평면 크기를 get
 	float GetNearWindowWidth()const;
 	float GetNearWindowHeight()const;
 	float GetFarWindowWidth()const;
@@ -50,6 +54,8 @@ public:
 	void SetLens(float fovY, float aspect, float zn, float zf);
 
 	// Define camera space via LookAt parameters.
+	// 여기서 월드 up벡터가 필요한 이유는
+	// 먼저 바라보는 방향으로 look벡터를 지정해주고 월드up과 look벡터를 외적하여 나머지 right벡터를 구하기 때문이다.
 	void LookAt(FXMVECTOR pos, FXMVECTOR target, FXMVECTOR worldUp);
 	void LookAt(const XMFLOAT3& pos, const XMFLOAT3& target, const XMFLOAT3& up);
 
