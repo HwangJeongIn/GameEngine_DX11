@@ -132,12 +132,17 @@ float4 PS(VertexOut pin,
 
 		litColor = texColor*(ambient + diffuse) + spec;
 
+		// 빛이 있을때 반사 플래그가 켜지면 반사
 		if( gReflectionEnabled )
 		{
+			// 입사 벡터를 구한다. // 눈 > 물체
 			float3 incident = -toEye;
+			// 노멀벡터 기준으로 반사된 벡터를 구해준다.
 			float3 reflectionVector = reflect(incident, pin.NormalW);
+			// 반사된 벡터를 조회벡터로 반사된 것들을 가지고 온다
 			float4 reflectionColor  = gCubeMap.Sample(samAnisotropic, reflectionVector);
 
+			// reflect 성분은 각 색을 얼마나 반사할지 정해주는 것이다.
 			litColor += gMaterial.Reflect*reflectionColor;
 		}
 	}

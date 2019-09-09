@@ -78,6 +78,7 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& camera)
 	XMMATRIX WVP = XMMatrixMultiply(T, camera.ViewProj());
 
 	Effects::SkyFX->SetWorldViewProj(WVP);
+	// 일반적인 큐브맵
 	Effects::SkyFX->SetCubeMap(mCubeMapSRV);
 
 

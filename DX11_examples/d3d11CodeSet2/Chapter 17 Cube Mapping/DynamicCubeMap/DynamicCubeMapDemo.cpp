@@ -313,33 +313,44 @@ void DynamicCubeMapApp::DrawScene()
 	ID3D11RenderTargetView* renderTargets[1];
 
 	// Generate the cube map.
+	// 큐브맵을 생성한다.
 	md3dImmediateContext->RSSetViewports(1, &mCubeMapViewport);
 	for(int i = 0; i < 6; ++i)
 	{
 		// Clear cube map face and depth buffer.
+		// 한면에 대한 렌더타겟뷰 클리어
 		md3dImmediateContext->ClearRenderTargetView(mDynamicCubeMapRTV[i], reinterpret_cast<const float*>(&Colors::Silver));
+		// 뎁스 스텐실뷰 클리어
 		md3dImmediateContext->ClearDepthStencilView(mDynamicCubeMapDSV, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		// Bind cube map face as render target.
+		// 큐브맵을 렌더타겟으로 묶어주고
 		renderTargets[0] = mDynamicCubeMapRTV[i];
+		// 역시 깊이 버퍼도 큐브맵용으로 바꿔준다.
 		md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDynamicCubeMapDSV);
 
 		// Draw the scene with the exception of the center sphere to this cube map face.
+		// 씬을 그려준다 // 가운데 구를 제외하고 // 이렇게 안하면 본인도 반사되어서 같이 반영된다.
 		DrawScene(mCubeMapCamera[i], false);
 	}
+	// 모든 큐브의 면들이 렌더링 되었다.
 
 	// Restore old viewport and render targets.
+	// 기존 뷰포트와 렌더타겟을 복구한다.
     md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
 	renderTargets[0] = mRenderTargetView;
     md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDepthStencilView);
 
     // Have hardware generate lower mipmap levels of cube map.
+	// 낮은 레벨의 밉맵도 필요하기 때문에 큐브맵에 대해서 생성해준다.
     md3dImmediateContext->GenerateMips(mDynamicCubeMapSRV);
 	
 	// Now draw the scene as normal, but with the center sphere.
+	// 일반적인 방식으로 렌더링 해준다.
 	md3dImmediateContext->ClearRenderTargetView(mRenderTargetView, reinterpret_cast<const float*>(&Colors::Silver));
 	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	
+	// 이때는 가운데 구를 그려준다.
 	DrawScene(mCam, true);
 
 	HR(mSwapChain->Present(0, 0));
@@ -541,6 +552,7 @@ void DynamicCubeMapApp::DrawScene(const Camera& camera, bool drawCenterSphere)
 			Effects::BasicFX->SetTexTransform(XMMatrixIdentity());
 			Effects::BasicFX->SetMaterial(mCenterSphereMat);
 			Effects::BasicFX->SetDiffuseMap(mStoneTexSRV);
+			// 큐브맵이 반영되었다.
 			Effects::BasicFX->SetCubeMap(mDynamicCubeMapSRV);
 
 			activeReflectTech->GetPassByIndex(p)->Apply(0, md3dImmediateContext);
@@ -557,19 +569,26 @@ void DynamicCubeMapApp::DrawScene(const Camera& camera, bool drawCenterSphere)
 
 void DynamicCubeMapApp::BuildCubeFaceCamera(float x, float y, float z)
 {
+	// 각 면당 카메라 1대씩 총 6대를 설치한다.
+
 	// Generate the cube map about the given position.
+	// 주어진 위치를 가지고 큐브맵생성
+	// 큐브의 중심 설정
 	XMFLOAT3 center(x, y, z);
 	XMFLOAT3 worldUp(0.0f, 1.0f, 0.0f);
 
 	// Look along each coordinate axis.
+	
 	XMFLOAT3 targets[6] = 
 	{
-		XMFLOAT3(x+1.0f, y, z), // +X
-		XMFLOAT3(x-1.0f, y, z), // -X
-		XMFLOAT3(x, y+1.0f, z), // +Y
-		XMFLOAT3(x, y-1.0f, z), // -Y
-		XMFLOAT3(x, y, z+1.0f), // +Z
-		XMFLOAT3(x, y, z-1.0f)  // -Z
+		// 입방체 맵은 0 - 5번 인덱스까지 다음과 같다.
+
+		XMFLOAT3(x+1.0f, y, z), // +X 0번 오른쪽
+		XMFLOAT3(x-1.0f, y, z), // -X 1번 왼쪽
+		XMFLOAT3(x, y+1.0f, z), // +Y 2번 위쪽
+		XMFLOAT3(x, y-1.0f, z), // -Y 3번 아래쪽
+		XMFLOAT3(x, y, z+1.0f), // +Z 4번 앞쪽
+		XMFLOAT3(x, y, z-1.0f)  // -Z 5번 뒷쪽
 	};
 
 	// Use world up vector (0,1,0) for all directions except +Y/-Y.  In these cases, we
@@ -586,8 +605,10 @@ void DynamicCubeMapApp::BuildCubeFaceCamera(float x, float y, float z)
 
 	for(int i = 0; i < 6; ++i)
 	{
+		// 시야각은 90도이다. // 비율은 정사각형이므로 1/1이다
 		mCubeMapCamera[i].LookAt(center, targets[i], ups[i]);
 		mCubeMapCamera[i].SetLens(0.5f*XM_PI, 1.0f, 0.1f, 1000.0f);
+		// 뷰행렬을 초기화 시켜준다.
 		mCubeMapCamera[i].UpdateViewMatrix();
 	}
 }
@@ -597,7 +618,12 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
 	//
 	// Cubemap is a special texture array with 6 elements.
 	//
-    
+    /*
+	입방체 맵은 원소가 여섯 개인 특별한 텍스처 배열이다. 
+	이 배열을 입방체 면들을 그려 넣을 렌더 대상으로 묶는다 또한 렌더링된 입방체 면들을
+	픽셀쉐이더에서 사용할 수 있도록 이 배열을 하나의 쉐이더 뷰 자원으로 묶는다
+	이는 렌더타겟 뷰를 6개 생성하고 / 큐브맵을 생성할때 사용된다.
+	*/
 	D3D11_TEXTURE2D_DESC texDesc;
     texDesc.Width = CubeMapSize;
     texDesc.Height = CubeMapSize;
@@ -607,8 +633,11 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
     texDesc.SampleDesc.Quality = 0;
     texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
+	// 물체들을 렌더링 해야하기 때문에 렌더 타겟으로 묶고 
+	// 쉐이더 자원으로 사용하여 환경매핑에 사용해야 하기 때문에 쉐이더 리소스로 묶는다.
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     texDesc.CPUAccessFlags = 0;
+	// 입방체 텍스처임을 알려줘야 한다. // 밉맵 생성 플래그도 넣어준다. // 아니면 취상위 밉맵에서 렌더링함
     texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS | D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 	ID3D11Texture2D* cubeTex = 0;
@@ -618,15 +647,19 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
 	 // Create a render target view to each cube map face 
 	 // (i.e., each element in the texture array).
 	 // 
+	// 큐브맵 한면당 하나씩 렌더타겟을 생성해준다.
 
     D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
     rtvDesc.Format = texDesc.Format;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+	// 배열의 한원소에 대해서 타겟 뷰를 생성 // 특성의.Texture2DArray.FirstArraySlice 만 바뀌면서 생성
     rtvDesc.Texture2DArray.ArraySize = 1;
     rtvDesc.Texture2DArray.MipSlice = 0;
 
     for(int i = 0; i < 6; ++i)
     {
+		// cubeTex의 i번째 원소에 대한 렌더 타겟 뷰를 생성 // 이렇게 해주기 때문에 큐브맵의 렌더타겟뷰와 쉐이더뷰가 연관된다.
+		// 한배열조각은 같은 맵에 여러 수준의 밉맵이 저장되어있음
         rtvDesc.Texture2DArray.FirstArraySlice = i;
         HR(md3dDevice->CreateRenderTargetView(cubeTex, &rtvDesc, &mDynamicCubeMapRTV[i]));
     }
@@ -634,7 +667,7 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
 	//
     // Create a shader resource view to the cube map.
 	//
-
+	// 큐브맵도 생성해준다.
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
     srvDesc.Format = texDesc.Format;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
@@ -643,6 +676,7 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
 
     HR(md3dDevice->CreateShaderResourceView(cubeTex, &srvDesc, &mDynamicCubeMapSRV));
 
+	// 렌더타겟뷰 6개와 큐브맵을 생성했기 때문에 이제 더이상 필요없다
 	ReleaseCOM(cubeTex);
 
 	//
@@ -650,7 +684,12 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
 	// that has the same resolution as the cubemap faces.  
 	//
 
+	// 큐브맵에 렌더링 하기 위해서는 큐브면에 맞는 depth stencil 뷰와
+	// 큐브면을 보여주는 뷰포트가 필요하다.
+
+
 	D3D11_TEXTURE2D_DESC depthTexDesc;
+	// 정방형의 큐브맵 // 뎁스 스텐실 버퍼도 그크기로 만들어준다.
     depthTexDesc.Width = CubeMapSize;
     depthTexDesc.Height = CubeMapSize;
     depthTexDesc.MipLevels = 1;
@@ -667,6 +706,7 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
     HR(md3dDevice->CreateTexture2D(&depthTexDesc, 0, &depthTex));
 
     // Create the depth stencil view for the entire cube
+
     D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
     dsvDesc.Format = depthTexDesc.Format;
 	dsvDesc.Flags  = 0;
@@ -674,12 +714,15 @@ void DynamicCubeMapApp::BuildDynamicCubeMapViews()
     dsvDesc.Texture2D.MipSlice = 0;
     HR(md3dDevice->CreateDepthStencilView(depthTex, &dsvDesc, &mDynamicCubeMapDSV));
 
+	// 텍스처에 대한 참조는 뷰 자체에 저장되어 있다.
 	ReleaseCOM(depthTex);
 
 	//
 	// Viewport for drawing into cubemap.
 	// 
 
+	// 뷰포트 역시 큐브맵 사이즈로 너비와 높이를 정해준다. 
+	// 이렇게 해야 알맞은 크기로 큐브맵에 물체들을 렌더링 할 수 있다.
 	mCubeMapViewport.TopLeftX = 0.0f;
     mCubeMapViewport.TopLeftY = 0.0f;
     mCubeMapViewport.Width    = (float)CubeMapSize;

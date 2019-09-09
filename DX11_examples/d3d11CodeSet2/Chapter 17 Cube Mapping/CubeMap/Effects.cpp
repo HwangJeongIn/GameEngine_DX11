@@ -99,6 +99,7 @@ BasicEffect::BasicEffect(ID3D11Device* device, const std::wstring& filename)
 	DirLights         = mFX->GetVariableByName("gDirLights");
 	Mat               = mFX->GetVariableByName("gMaterial");
 	DiffuseMap        = mFX->GetVariableByName("gDiffuseMap")->AsShaderResource();
+	// 입방체 맵도 마찬가지로 쉐이더 리소스 형식으로 받아올 수 있다.
 	CubeMap           = mFX->GetVariableByName("gCubeMap")->AsShaderResource();
 }
 

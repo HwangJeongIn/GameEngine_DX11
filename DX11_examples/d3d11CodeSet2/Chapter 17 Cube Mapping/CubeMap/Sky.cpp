@@ -10,6 +10,7 @@
 
 Sky::Sky(ID3D11Device* device, const std::wstring& cubemapFilename, float skySphereRadius)
 {
+	// 파일에서 입방체 맵을 가지고 온다
 	HR(D3DX11CreateShaderResourceViewFromFile(device, cubemapFilename.c_str(), 0, 0, &mCubeMapSRV, 0));
 
 	GeometryGenerator::MeshData sphere;
@@ -72,7 +73,7 @@ void Sky::Draw(ID3D11DeviceContext* dc, const Camera& camera)
 {
 	// center Sky about eye in world space
 	XMFLOAT3 eyePos = camera.GetPosition();
-	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);
+	XMMATRIX T = XMMatrixTranslation(eyePos.x, eyePos.y, eyePos.z);//(0,0,0);//(eyePos.x, eyePos.y, eyePos.z);
 
 
 	XMMATRIX WVP = XMMatrixMultiply(T, camera.ViewProj());

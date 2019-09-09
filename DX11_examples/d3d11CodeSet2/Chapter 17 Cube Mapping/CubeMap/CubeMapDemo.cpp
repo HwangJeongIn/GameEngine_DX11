@@ -236,20 +236,21 @@ void CubeMapApp::OnResize()
 
 void CubeMapApp::UpdateScene(float dt)
 {
+	float speed = 10;
 	//
 	// Control the camera.
 	//
 	if( GetAsyncKeyState('W') & 0x8000 )
-		mCam.Walk(10.0f*dt);
+		mCam.Walk(speed*dt);
 
 	if( GetAsyncKeyState('S') & 0x8000 )
-		mCam.Walk(-10.0f*dt);
+		mCam.Walk(-speed*dt);
 
 	if( GetAsyncKeyState('A') & 0x8000 )
-		mCam.Strafe(-10.0f*dt);
+		mCam.Strafe(-speed*dt);
 
 	if( GetAsyncKeyState('D') & 0x8000 )
-		mCam.Strafe(10.0f*dt);
+		mCam.Strafe(speed*dt);
 
 	//
 	// Switch the number of lights based on key presses.
