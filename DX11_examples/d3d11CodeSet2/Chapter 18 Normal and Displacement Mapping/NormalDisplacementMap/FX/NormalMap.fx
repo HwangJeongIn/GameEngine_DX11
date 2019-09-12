@@ -58,7 +58,9 @@ VertexOut VS(VertexIn vin)
 	
 	// Transform to world space space.
 	vout.PosW     = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
+	// 물체공간 기준 노말과 탄젠트 값이 들어왔는데 월드기준으로 바꿔준다.
 	vout.NormalW  = mul(vin.NormalL, (float3x3)gWorldInvTranspose);
+	// 나중에 유도해보기 아마 기존면과 평행하기 때문에 그냥 월드행렬로 쓰는듯
 	vout.TangentW = mul(vin.TangentL, (float3x3)gWorld);
 
 	// Transform to homogeneous clip space.
@@ -109,7 +111,12 @@ float4 PS(VertexOut pin,
 	// Normal mapping
 	//
 
+	// 노말맵 표본 추출
+	// 이과정에서 0 - 255 구간의 정수를 255로 나눠서 
+	// 0 - 1구간으로 만들어지는 복원 과정의 일부가 자동으로 일어난다. rgb로 뽑아서 그런듯
 	float3 normalMapSample = gNormalMap.Sample(samLinear, pin.Tex).rgb;
+
+	// 최종 월드기준 노말맵값
 	float3 bumpedNormalW = NormalSampleToWorldSpace(normalMapSample, pin.NormalW, pin.TangentW);
 	 
 	//
@@ -129,6 +136,7 @@ float4 PS(VertexOut pin,
 		for(int i = 0; i < gLightCount; ++i)
 		{
 			float4 A, D, S;
+			// 월드 기준으로 구한 노말벡터를 가지고 최종 색상을 결정하기 위한 빛계산을 한다.
 			ComputeDirectionalLight(gMaterial, gDirLights[i], bumpedNormalW, toEye, 
 				A, D, S);
 
@@ -142,6 +150,7 @@ float4 PS(VertexOut pin,
 		if( gReflectionEnabled )
 		{
 			float3 incident = -toEye;
+			// 반사계산도 마찬가지로 계산된 노말맵의 값으로 이루어진다.
 			float3 reflectionVector = reflect(incident, bumpedNormalW);
 			float4 reflectionColor  = gCubeMap.Sample(samLinear, reflectionVector);
 

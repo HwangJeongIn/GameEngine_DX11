@@ -41,18 +41,24 @@ Terrain::~Terrain()
 float Terrain::GetWidth()const
 {
 	// Total terrain width.
+	// 여기서 하이트맵의 너비는 최대로 테셀레이션되었을 때의 버텍스 수 이다.
 	return (mInfo.HeightmapWidth-1)*mInfo.CellSpacing;
 }
 
 float Terrain::GetDepth()const
 {
 	// Total terrain depth.
+	// 여기서 하이트 맵의 깊이는 최대로 테셀레이션되었을 때의 버텍스 수 이다.
 	return (mInfo.HeightmapHeight-1)*mInfo.CellSpacing;
 }
 
 float Terrain::GetHeight(float x, float z)const
 {
 	// Transform from terrain local space to "cell" space.
+	// 이때 x z는 터레인좌표계안에 있다. 인덱스를 구하기위해서 터레인의 원점기준으로 바꿔준다. 원점이 0,0
+	// 인덱스에 -가 없기 때문이다.
+	// 그다음에 한칸당간격으로 나눈후 버림해서 왼쪽위 쿼드 기준으로 인덱스를 잡아준다.
+	// ex> 12.1 인덱스 같은 값이 나온다.
 	float c = (x + 0.5f*GetWidth()) /  mInfo.CellSpacing;
 	float d = (z - 0.5f*GetDepth()) / -mInfo.CellSpacing;
 
@@ -65,16 +71,21 @@ float Terrain::GetHeight(float x, float z)const
 	//  | /|
 	//  |/ |
 	// C*--*D
+	// 왼쪽위 기준
 	float A = mHeightmap[row*mInfo.HeightmapWidth + col];
 	float B = mHeightmap[row*mInfo.HeightmapWidth + col + 1];
 	float C = mHeightmap[(row+1)*mInfo.HeightmapWidth + col];
 	float D = mHeightmap[(row+1)*mInfo.HeightmapWidth + col + 1];
 
 	// Where we are relative to the cell.
+	// 버렸던 인덱스 소수점을 복원
 	float s = c - (float)col;
 	float t = d - (float)row;
 
 	// If upper triangle ABC.
+	// 그 소수점을 더해서 왼쪽위 기준 삼각형인지 오른쪽아래 삼각형인지 정해준다.
+
+	// 각각 보간
 	if( s + t <= 1.0f)
 	{
 		float uy = B - A;
@@ -104,14 +115,21 @@ void Terrain::Init(ID3D11Device* device, ID3D11DeviceContext* dc, const InitInfo
 	mInfo = initInfo;
 
 	// Divide heightmap into patches such that each patch has CellsPerPatch.
+	// 전체 하이트맵의 원소를 패치의 셀의갯수로 나눠서 몇행 몇열인지 알아낸다.
 	mNumPatchVertRows = ((mInfo.HeightmapHeight-1) / CellsPerPatch) + 1;
 	mNumPatchVertCols = ((mInfo.HeightmapWidth-1) / CellsPerPatch) + 1;
 
+	// 총 패치의 버텍스들의 갯수와 패치면들의 갯수를 알아낸다.
 	mNumPatchVertices  = mNumPatchVertRows*mNumPatchVertCols;
 	mNumPatchQuadFaces = (mNumPatchVertRows-1)*(mNumPatchVertCols-1);
 
+	// 하이트맵을 로딩한다.
 	LoadHeightmap();
+
+	// 일정한 값들이 잘려서 나오기 떄문에 평탄화 작업 // 주변 값들의 평균
 	Smooth();
+
+	// 모든 패치에 대한 최소경계와 최대경계를 구하는 함수이다.
 	CalcAllPatchBoundsY();
 
 	BuildQuadPatchVB(device);
@@ -146,6 +164,7 @@ void Terrain::Draw(ID3D11DeviceContext* dc, const Camera& cam, DirectionalLight 
 	XMMATRIX worldViewProj = world*viewProj;
 
 	XMFLOAT4 worldPlanes[6];
+	// view proj행렬을 가지고 절두체 면들을 구해준다.
 	ExtractFrustumPlanes(worldPlanes, viewProj);
 
 	// Set per frame constants.
@@ -155,8 +174,10 @@ void Terrain::Draw(ID3D11DeviceContext* dc, const Camera& cam, DirectionalLight 
 	Effects::TerrainFX->SetFogColor(Colors::Silver);
 	Effects::TerrainFX->SetFogStart(15.0f);
 	Effects::TerrainFX->SetFogRange(175.0f);
+	// 최대 최소 거리 설정
 	Effects::TerrainFX->SetMinDist(20.0f);
 	Effects::TerrainFX->SetMaxDist(500.0f);
+	// 최대 최소 테셀레이션 계수 설정
 	Effects::TerrainFX->SetMinTess(0.0f);
 	Effects::TerrainFX->SetMaxTess(6.0f);
 	Effects::TerrainFX->SetTexelCellSpaceU(1.0f / mInfo.HeightmapWidth);
@@ -191,15 +212,20 @@ void Terrain::Draw(ID3D11DeviceContext* dc, const Camera& cam, DirectionalLight 
 void Terrain::LoadHeightmap()
 {
 	// A height for each vertex
+	// 각 정점의 높이를 담는 배열
+	// 8비트형식으로 저장되기 때문에 unsigned char형으로 받는다. // 0 - 255
+	// 내부 높이과 너비값은 하드코딩으로 들어온다.
 	std::vector<unsigned char> in( mInfo.HeightmapWidth * mInfo.HeightmapHeight );
 
 	// Open the file.
 	std::ifstream inFile;
+	// binary형식으로 열어준다.
 	inFile.open(mInfo.HeightMapFilename.c_str(), std::ios_base::binary);
 
 	if(inFile)
 	{
 		// Read the RAW bytes.
+		// 만약 파일이 열렸다면 읽어준다. // 기존 높이값 개수만큼 읽어준다.
 		inFile.read((char*)&in[0], (std::streamsize)in.size());
 
 		// Done with file.
@@ -210,6 +236,7 @@ void Terrain::LoadHeightmap()
 	mHeightmap.resize(mInfo.HeightmapHeight * mInfo.HeightmapWidth, 0);
 	for(UINT i = 0; i < mInfo.HeightmapHeight * mInfo.HeightmapWidth; ++i)
 	{
+		// 기존에 읽었던 것들을 0 ~ 1사이로 변환시켜준다.
 		mHeightmap[i] = (in[i] / 255.0f)*mInfo.HeightScale;
 	}
 }
@@ -222,17 +249,20 @@ void Terrain::Smooth()
 	{
 		for(UINT j = 0; j < mInfo.HeightmapWidth; ++j)
 		{
+			// 9개의 픽셀의 평균을 구해서  거친면을 평탄화 시킨다.
 			dest[i*mInfo.HeightmapWidth+j] = Average(i,j);
 		}
 	}
 
 	// Replace the old heightmap with the filtered one.
+	// 최종적으로 하이트맵을 평탄화 하였다.
 	mHeightmap = dest;
 }
 
 bool Terrain::InBounds(int i, int j)
 {
 	// True if ij are valid indices; false otherwise.
+	// i j 로 표현되는 인덱스가 하이트맵의 범위 내부인지 확인한다.
 	return 
 		i >= 0 && i < (int)mInfo.HeightmapHeight && 
 		j >= 0 && j < (int)mInfo.HeightmapWidth;
@@ -270,6 +300,8 @@ float Terrain::Average(int i, int j)
 		}
 	}
 
+	// 최종적으로 하이트맵 내부에 있는 위치가 아닌경우을 제외한것들의 평균을 구한다.
+	// 가장자리가 아닌이상 num = 9가된다.
 	return avg / num;
 }
 
@@ -291,6 +323,8 @@ void Terrain::CalcPatchBoundsY(UINT i, UINT j)
 {
 	// Scan the heightmap values this patch covers and compute the min/max height.
 
+	// 패치기준으로 왼쪽위가 기준점이기 때문에
+	// 그다음 패치전까지 범위를 두고 가장 큰 Y값과 작은 Y값을 구해준다.
 	UINT x0 = j*CellsPerPatch;
 	UINT x1 = (j+1)*CellsPerPatch;
 
@@ -309,29 +343,40 @@ void Terrain::CalcPatchBoundsY(UINT i, UINT j)
 		}
 	}
 
+	// 최종적으로 그패치에 맞는 인덱스에 BoundY 값을 최소 최대값으로 넣어준다.
+	// 이러면 한 패치에 대한 최소와 최대 경계를 알 수 있다.
 	UINT patchID = i*(mNumPatchVertCols-1)+j;
 	mPatchBoundsY[patchID] = XMFLOAT2(minY, maxY);
 }
 
 void Terrain::BuildQuadPatchVB(ID3D11Device* device)
 {
+	// 패치의 버텍스 만큼 버텍스를 만들어준다. // 세부적으로 나뉘는 것은 나중에 테셀레이션 단계에서
 	std::vector<Vertex::Terrain> patchVertices(mNumPatchVertRows*mNumPatchVertCols);
 
+	// 높이반과 너비 반을 구해준다. // cellSpacing * (총 높이값을 가진 버텍스 -1 == 높이값을 가진 면들 == 테셀레이션 최대일때 면들)
 	float halfWidth = 0.5f*GetWidth();
 	float halfDepth = 0.5f*GetDepth();
 
+	// 한패치의 너비와 깊이를 구해준다. // 한패치는 64 * 64개의 작은 면들로 이루어져있다.
 	float patchWidth = GetWidth() / (mNumPatchVertCols-1);
 	float patchDepth = GetDepth() / (mNumPatchVertRows-1);
+
+	// 그를 기반으로 uv값을 구해준다.
 	float du = 1.0f / (mNumPatchVertCols-1);
 	float dv = 1.0f / (mNumPatchVertRows-1);
 
 	for(UINT i = 0; i < mNumPatchVertRows; ++i)
 	{
+		// 원점이 터레인의 중심이라고 생각했을때 패치의 깊이 좌표
 		float z = halfDepth - i*patchDepth;
 		for(UINT j = 0; j < mNumPatchVertCols; ++j)
 		{
+
+			// 원점이 터레인의 중심이라고 생각했을때 패치의 너비 좌표
 			float x = -halfWidth + j*patchWidth;
 
+			// 높이를 제외한 나머지 값들을 넣어준다 // 텍스처도 같이
 			patchVertices[i*mNumPatchVertCols+j].Pos = XMFLOAT3(x, 0.0f, z);
 
 			// Stretch texture over grid.
@@ -341,6 +386,8 @@ void Terrain::BuildQuadPatchVB(ID3D11Device* device)
 	}
 
 	// Store axis-aligned bounding box y-bounds in upper-left patch corner.
+	// 축정렬 경계상자의 y경계들을 왼쪽위 모퉁이 패치에 저장해둔다. // 기존에 했던것을 그냥 복사한다.
+	// 이것으로 버텍스 버퍼를 만들어서 쉐이더로 올리기 떄문
 	for(UINT i = 0; i < mNumPatchVertRows-1; ++i)
 	{
 		for(UINT j = 0; j < mNumPatchVertCols-1; ++j)
@@ -369,6 +416,7 @@ void Terrain::BuildQuadPatchIB(ID3D11Device* device)
 
 	// Iterate over each quad and compute indices.
 	int k = 0;
+	// 1씩 작게 돌아서 오버플로우가 안나게 한다.
 	for(UINT i = 0; i < mNumPatchVertRows-1; ++i)
 	{
 		for(UINT j = 0; j < mNumPatchVertCols-1; ++j)
@@ -398,6 +446,7 @@ void Terrain::BuildQuadPatchIB(ID3D11Device* device)
     HR(device->CreateBuffer(&ibd, &iinitData, &mQuadPatchIB));
 }
 
+// 쉐이더 리소스 뷰를 만들어준다.
 void Terrain::BuildHeightmapSRV(ID3D11Device* device)
 {
 	D3D11_TEXTURE2D_DESC texDesc;
@@ -405,6 +454,7 @@ void Terrain::BuildHeightmapSRV(ID3D11Device* device)
 	texDesc.Height = mInfo.HeightmapHeight;
     texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
+	// 16비트형 float형을 사용한다. // 메모리 절약을 위해서
 	texDesc.Format    = DXGI_FORMAT_R16_FLOAT;
 	texDesc.SampleDesc.Count   = 1;
 	texDesc.SampleDesc.Quality = 0;
@@ -414,6 +464,9 @@ void Terrain::BuildHeightmapSRV(ID3D11Device* device)
 	texDesc.MiscFlags = 0;
 
 	// HALF is defined in xnamath.h, for storing 16-bit float.
+	// 16비트 float형을 저장하기 위해서 HALF를 이용한다 // HALF는 unsigned short이다.
+
+	// 기존 mHeightmap(32비트) > 16비트 float형으로 변경하기 위한 과정
 	std::vector<HALF> hmap(mHeightmap.size());
 	std::transform(mHeightmap.begin(), mHeightmap.end(), hmap.begin(), XMConvertFloatToHalf);
 	

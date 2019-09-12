@@ -126,8 +126,10 @@ bool TerrainApp::Init()
 	tii.HeightScale = 50.0f;
 	tii.HeightmapWidth = 2049;
 	tii.HeightmapHeight = 2049;
+	// cell의 크기
 	tii.CellSpacing = 0.5f;
 
+	// 지형에 대한 정보들을 넘겨준다. 2048 * 2048개의 면이 필요하기 때문에 높이값은 하나씩 더 많아야 한다.
 	mTerrain.Init(md3dDevice, md3dImmediateContext, tii);
 	return true;
 }
@@ -144,17 +146,18 @@ void TerrainApp::UpdateScene(float dt)
 	//
 	// Control the camera.
 	//
+	float speed = 100;
 	if( GetAsyncKeyState('W') & 0x8000 )
-		mCam.Walk(10.0f*dt);
+		mCam.Walk(speed*dt);
 
 	if( GetAsyncKeyState('S') & 0x8000 )
-		mCam.Walk(-10.0f*dt);
+		mCam.Walk(-speed*dt);
 
 	if( GetAsyncKeyState('A') & 0x8000 )
-		mCam.Strafe(-10.0f*dt);
+		mCam.Strafe(-speed*dt);
 
 	if( GetAsyncKeyState('D') & 0x8000 )
-		mCam.Strafe(10.0f*dt);
+		mCam.Strafe(speed*dt);
 
 	//
 	// Walk/fly mode
@@ -170,6 +173,7 @@ void TerrainApp::UpdateScene(float dt)
 	if( mWalkCamMode )
 	{
 		XMFLOAT3 camPos = mCam.GetPosition();
+		// 터레인의 월드 행렬은 단위행렬이기 때문에 월드자체가 터레인의 로컬공간이라고 할 수 있다.
 		float y = mTerrain.GetHeight(camPos.x, camPos.z);
 		mCam.SetPosition(camPos.x, y + 2.0f, camPos.z);
 	}

@@ -200,13 +200,36 @@ void ComputeSpotLight(Material mat, SpotLight L, float3 pos, float3 normal, floa
 //---------------------------------------------------------------------------------------
 // Transforms a normal map sample to world space.
 //---------------------------------------------------------------------------------------
+
+/*
+기존에 있던 노말과 탄젠트 값을 이용해서 binormal(바이노말) 을 월드기준 정규화된 벡터들로 구해준다.
+노말과 탄젠트의 경우 물체공간에서의 위치는 알기 때문에 최종적으로 월드 행렬을 적용하면되고
+바이노말의 경우 두 벡터의 외적으로 구해준다.
+
+이렇게 3가지 월드에서의 정규벡터를 구하면
+텍스처공간에서 월드공간으로의 변환행렬을 구할 수 있고,
+최종적으로 노말맵에 있는 (텍스처공간) 값을 변환하여 얻은값으로 변환행렬을 적용시켜서 최종 노말값을 구해준다.
+*/
+
 float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, float3 tangentW)
 {
 	// Uncompress each component from [0,1] to [-1,1].
+	// 압축을 해제한다. 일단 0 ~ 255 >> 0 ~ 1 까지는 자동으로 해결됨
+	// 원하는 노말값을 얻기 위해서 변환 // 이는 텍스처공간에서의 노말값이다.
 	float3 normalT = 2.0f*normalMapSample - 1.0f;
 
 	// Build orthonormal basis.
+	// 들어온 노말은 월드 기준 정규화된 노말이다.
 	float3 N = unitNormalW;
+	
+	/*
+	들어온 탄젠트는 정규화를 시켜야 하는데
+	이러한 값이 나오는 이유는 탄젠트 벡터를 노말벡터에 투영시키고 그만큼 노말방향으로 빼서
+	완전한 직각을 만들어준다.
+
+	이런작업을 해주는 이유는 보간과정에서 더이상 두 벡터가 직교가 아닐 수 있기 때문이다.
+	*/
+
 	float3 T = normalize(tangentW - dot(tangentW, N)*N);
 	float3 B = cross(N, T);
 
@@ -215,5 +238,6 @@ float3 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 	// Transform from tangent space to world space.
 	float3 bumpedNormalW = mul(normalT, TBN);
 
+	// 최종적으로 텍스처공간(접공간) > 물체공간 > 월드공간에서의 노말벡터가 필요한 것이다.
 	return bumpedNormalW;
 }

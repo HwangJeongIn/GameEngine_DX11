@@ -335,6 +335,7 @@ void NormalDisplacementMapApp::DrawScene()
 		break;
 	case RenderOptionsDisplacementMap:
 		activeTech = Effects::DisplacementMapFX->Light3TexTech;
+		// 테셀레이션을 이용하기 위한 간단한 방법은 패치의 제어점으로 해석하게 만드는 것이다.
 		md3dImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 		break;
 	}

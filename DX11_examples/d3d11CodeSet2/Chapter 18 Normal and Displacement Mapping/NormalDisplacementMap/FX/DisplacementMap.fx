@@ -14,9 +14,18 @@ cbuffer cbPerFrame
 	float4 gFogColor; 
 	
 	float gHeightScale;
+
+	// 테셀레이션이 최대가 되는 거리 // 시점과 삼각형 사이의
 	float gMaxTessDistance;
+	
+	// 테셀레이션이 최소가 되는 거리
 	float gMinTessDistance;
+	
+	// 테셀레이션 계수의 최솟값 // 만약 시점과의 거리에 상관없이 무조건 3번은 분할되어야 한다면 3을 지정한다.
 	float gMinTessFactor;
+	
+	// 테셀레이션 계수의 최댓값 
+	// 예를들어 테셀레이션이 6회를 넘기면 아무리 쪼개도 더이상 눈에 띄는 품질 개선이 없을 수 있다.
 	float gMaxTessFactor;
 };
 
@@ -64,6 +73,7 @@ VertexOut VS(VertexIn vin)
 	VertexOut vout;
 	
 	// Transform to world space space.
+	// 세계 공간으로 변환
 	vout.PosW     = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
 	vout.NormalW  = mul(vin.NormalL, (float3x3)gWorldInvTranspose);
 	vout.TangentW = mul(vin.TangentL, (float3x3)gWorld);
@@ -75,8 +85,9 @@ VertexOut VS(VertexIn vin)
 
 	// Normalized tessellation factor. 
 	// The tessellation is 
-	//   0 if d >= gMinTessDistance and
-	//   1 if d <= gMaxTessDistance.  
+	// 이상하게 쓰여있어서 수정함
+	//   0 if d <= gMinTessDistance and
+	//   1 if d >= gMaxTessDistance.  
 	float tess = saturate( (gMinTessDistance - d) / (gMinTessDistance - gMaxTessDistance) );
 	
 	// Rescale [0,1] --> [gMinTessFactor, gMaxTessFactor].
@@ -91,6 +102,7 @@ struct PatchTess
 	float InsideTess  : SV_InsideTessFactor;
 };
 
+// constant hull shader
 PatchTess PatchHS(InputPatch<VertexOut,3> patch, 
                   uint patchID : SV_PrimitiveID)
 {
@@ -101,6 +113,12 @@ PatchTess PatchHS(InputPatch<VertexOut,3> patch,
 	// calculation based on the edge properties so that edges shared by 
 	// more than one triangle will have the same tessellation factor.  
 	// Otherwise, gaps can appear.
+	/*
+	정점 테셀레이션 계수들을 변을 따라 평균을 구한다.
+	테셀레이션 계수들을 변의 속성에 근거해서 계산하는 것이 중요
+	그래야 여러 삼각형이 공유하는 변의 테셀레이션 계수가 그러한 모든 삼각형에서 동일해짐
+	아니면 메시에 틈이 생김
+	*/
 	pt.EdgeTess[0] = 0.5f*(patch[1].TessFactor + patch[2].TessFactor);
 	pt.EdgeTess[1] = 0.5f*(patch[2].TessFactor + patch[0].TessFactor);
 	pt.EdgeTess[2] = 0.5f*(patch[0].TessFactor + patch[1].TessFactor);
@@ -117,6 +135,7 @@ struct HullOut
 	float2 Tex      : TEXCOORD;
 };
 
+// control hull shader
 [domain("tri")]
 [partitioning("fractional_odd")]
 [outputtopology("triangle_cw")]
@@ -129,6 +148,7 @@ HullOut HS(InputPatch<VertexOut,3> p,
 	HullOut hout;
 	
 	// Pass through shader.
+	// 그대로 통과
 	hout.PosW     = p[i].PosW;
 	hout.NormalW  = p[i].NormalW;
 	hout.TangentW = p[i].TangentW;
@@ -148,6 +168,9 @@ struct DomainOut
 
 // The domain shader is called for every vertex created by the tessellator.  
 // It is like the vertex shader after tessellation.
+// 영역쉐이더는 테셀레이션된 패치에 대한 정점 쉐이더이다.
+// 실질적인 변위매핑이 일어나는 곳 
+// 법선맵의 알파채널에 저장된 높이맵에서 높이값을 추출해서 정점위치를 법선방향으로 공식으로 이동
 [domain("tri")]
 DomainOut DS(PatchTess patchTess, 
              float3 bary : SV_DomainLocation, 
@@ -156,12 +179,14 @@ DomainOut DS(PatchTess patchTess,
 	DomainOut dout;
 	
 	// Interpolate patch attributes to generated vertices.
+	// 패치 좌표계를 이용해서 보간해준다.
 	dout.PosW     = bary.x*tri[0].PosW     + bary.y*tri[1].PosW     + bary.z*tri[2].PosW;
 	dout.NormalW  = bary.x*tri[0].NormalW  + bary.y*tri[1].NormalW  + bary.z*tri[2].NormalW;
 	dout.TangentW = bary.x*tri[0].TangentW + bary.y*tri[1].TangentW + bary.z*tri[2].TangentW;
 	dout.Tex      = bary.x*tri[0].Tex      + bary.y*tri[1].Tex      + bary.z*tri[2].Tex;
 	
 	// Interpolating normal can unnormalize it, so normalize it.
+	// 보간때문에 법선벡터가 더이상 단위벡터가 아닐 수 있음
 	dout.NormalW = normalize(dout.NormalW);
 	
 	//
@@ -170,13 +195,18 @@ DomainOut DS(PatchTess patchTess,
 	
 	// Choose the mipmap level based on distance to the eye; specifically, choose
 	// the next miplevel every MipInterval units, and clamp the miplevel in [0,6].
+	// 시점과의 거리에 근거해서 밉맵수준을 정한다.
+	// 매 mipInterval단위마다 다음번 밉맵수준을 선택하고 그것을 0 ~ 6구간으로 한정
 	const float MipInterval = 20.0f;
+	// 거리가 짧으면 밉맵수준이 0에 가까워진다 // 0이 가장 정밀하다
 	float mipLevel = clamp( (distance(dout.PosW, gEyePosW) - MipInterval) / MipInterval, 0.0f, 6.0f);
 	
 	// Sample height map (stored in alpha channel).
+	// 밉맵 레벨과 좌표를 통해서 노말맵의 알파채널을 받아온다 // 하이트맵
 	float h = gNormalMap.SampleLevel(samLinear, dout.Tex, mipLevel).a;
 	
 	// Offset vertex along normal.
+	// 이동 // 노말기준 반대방향 안쪽으로 들어감
 	dout.PosW += (gHeightScale*(h-1.0))*dout.NormalW;
 	
 	// Project to homogeneous clip space.

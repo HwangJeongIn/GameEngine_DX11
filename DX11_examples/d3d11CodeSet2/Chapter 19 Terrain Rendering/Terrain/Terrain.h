@@ -17,16 +17,24 @@ class Terrain
 public:
 	struct InitInfo
 	{
+		// 높이맵 이름
 		std::wstring HeightMapFilename;
+		// 각 파일의 이름 
 		std::wstring LayerMapFilename0;
 		std::wstring LayerMapFilename1;
 		std::wstring LayerMapFilename2;
 		std::wstring LayerMapFilename3;
 		std::wstring LayerMapFilename4;
 		std::wstring BlendMapFilename;
+		
+		// 높이 가중치
 		float HeightScale;
+		// 너비 // 너비 높이값 갯수
 		UINT HeightmapWidth;
+		// 높이 // 높이 높이값 갯수
 		UINT HeightmapHeight;
+
+		// 셀사이의 공간
 		float CellSpacing;
 	};
 
