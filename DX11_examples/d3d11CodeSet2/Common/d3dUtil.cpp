@@ -146,6 +146,9 @@ ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* devi
 	// 
 	// Create the random data.
 	//
+	// 텍스처를 랜덤으로 값을 넣어서 만들어서 쉐이더로 올려준다.
+	// 쉐이더 자체에 랜덤한 수를 발생시키기 어렵기 때문이다.
+
 	XMFLOAT4 randomValues[1024];
 
 	for(int i = 0; i < 1024; ++i)
@@ -166,6 +169,7 @@ ID3D11ShaderResourceView* d3dHelper::CreateRandomTexture1DSRV(ID3D11Device* devi
 	//
     D3D11_TEXTURE1D_DESC texDesc;
     texDesc.Width = 1024;
+	// 밉맵레벨이 하나만 있으면된다.
     texDesc.MipLevels = 1;
     texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     texDesc.Usage = D3D11_USAGE_IMMUTABLE;

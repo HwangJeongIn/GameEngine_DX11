@@ -68,10 +68,12 @@ XMVECTOR MathHelper::RandHemisphereUnitVec3(XMVECTOR n)
 		// over the unit sphere.  Otherwise points will clump more on the sphere near 
 		// the corners of the cube.
 		
+		// 단위구바깥으로 나오면 걸러준다.
 		if( XMVector3Greater( XMVector3LengthSq(v), One) )
 			continue;
 
 		// Ignore points in the bottom hemisphere.
+		// 아랫쪽 반구 무시
 		if( XMVector3Less( XMVector3Dot(n, v), Zero ) )
 			continue;
 

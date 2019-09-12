@@ -200,6 +200,7 @@ struct GeoOut
 // The draw GS just expands points into lines.
 [maxvertexcount(2)]
 void DrawGS(point VertexOut gin[1], 
+	// 추후 autoDraw로 그린다.
             inout LineStream<GeoOut> lineStream)
 {	
 	// do not draw emitter particles.
