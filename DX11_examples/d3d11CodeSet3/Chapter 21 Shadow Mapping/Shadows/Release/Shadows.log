@@ -1,2 +1,7 @@
-﻿  Shadows.vcxproj -> D:\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet3\Chapter 21 Shadow Mapping\Shadows\Release\Shadows.exe
+﻿  fxc compile for release: D:\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet3\Chapter 21 Shadow Mapping\Shadows\FX\Basic.fx
+  Microsoft (R) Direct3D Shader Compiler 9.29.952.3111
+  Copyright (C) Microsoft Corporation 2002-2009. All rights reserved.
+  
+  compilation succeeded; see D:\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet3\Chapter 21 Shadow Mapping\Shadows\FX\Basic.fxo
+  Shadows.vcxproj -> D:\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet3\Chapter 21 Shadow Mapping\Shadows\Release\Shadows.exe
   Shadows.vcxproj -> D:\GitHub\GameEngine_DX11\DX11_examples\d3d11CodeSet3\Chapter 21 Shadow Mapping\Shadows\Release\Shadows.pdb (Full PDB)

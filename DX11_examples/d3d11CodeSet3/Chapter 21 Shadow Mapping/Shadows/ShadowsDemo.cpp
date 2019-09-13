@@ -84,8 +84,10 @@ private:
 	ID3D11ShaderResourceView* mStoneNormalTexSRV;
 	ID3D11ShaderResourceView* mBrickNormalTexSRV;
 
+
 	BoundingSphere mSceneBounds;
 
+	// 그림자 맵 사이즈
 	static const int SMapSize = 2048;
 	ShadowMap* mSmap;
 	XMFLOAT4X4 mLightView;
@@ -168,7 +170,14 @@ ShadowsApp::ShadowsApp(HINSTANCE hInstance)
 	// The grid is the "widest object" with a width of 20 and depth of 30.0f, and centered at
 	// the world space origin.  In general, you need to loop over every world space vertex
 	// position and compute the bounding sphere.
+	/*
+	장면의 구성을 미리 알고 있으므로, 수치들을 직접 지정해서 장면의 경계구를 추정한다.
+	장면에서 너비가 가장 넓은 물체는 바닥 격자로 세계공간의 완점에 놓여있으며, 너비가 20이고 깊이는 30이다
+	일반적으로 세계공간의 모든 정점위치를 훑어서 경계구의 반지름을 구해야 할것이다.
+	*/
+
 	mSceneBounds.Center = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	// 이미 알고 있다고 가정
 	mSceneBounds.Radius = sqrtf(10.0f*10.0f + 15.0f*15.0f);
 
 	XMMATRIX I = XMMatrixIdentity();
@@ -336,12 +345,15 @@ void ShadowsApp::UpdateScene(float dt)
 	// Animate the lights (and hence shadows).
 	//
 
+	// 라이트를 애니메이션 시킨다.
 	mLightRotationAngle += 0.1f*dt;
 
+	// y축기준으로 회전시킨다.
 	XMMATRIX R = XMMatrixRotationY(mLightRotationAngle);
 	for(int i = 0; i < 3; ++i)
 	{
 		XMVECTOR lightDir = XMLoadFloat3(&mOriginalLightDir[i]);
+		// 기존 방향에서 로테이션을 적용한 방향을 넣어준다.
 		lightDir = XMVector3TransformNormal(lightDir, R);
 		XMStoreFloat3(&mDirLights[i].Direction, lightDir);
 	}
@@ -353,8 +365,10 @@ void ShadowsApp::UpdateScene(float dt)
 
 void ShadowsApp::DrawScene()
 {
+	// 렌더타겟을 널로 설정하고 쉐도우 맵에 맞는 깊이버퍼 설정
 	mSmap->BindDsvAndSetNullRenderTarget(md3dImmediateContext);
 
+	// 그림자 맵을 그린다.
 	DrawSceneToShadowMap();
 
 	md3dImmediateContext->RSSetState(0);
@@ -362,6 +376,7 @@ void ShadowsApp::DrawScene()
 	//
 	// Restore the back and depth buffer to the OM stage.
 	//
+	// 기존 후면버퍼와 깊이버퍼를 출력병합기에 다시 복원시킨다.
 	ID3D11RenderTargetView* renderTargets[1] = {mRenderTargetView};
 	md3dImmediateContext->OMSetRenderTargets(1, renderTargets, mDepthStencilView);
 	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
@@ -429,6 +444,8 @@ void ShadowsApp::DrawScene()
 	//
 	// Draw the grid, cylinders, and box without any cubemap reflection.
 	// 
+
+	// 그림자를 그린다.
 
 	UINT stride = sizeof(Vertex::PosNormalTexTan);
     UINT offset = 0;
@@ -695,10 +712,12 @@ void ShadowsApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void ShadowsApp::DrawSceneToShadowMap()
 {
+	// 라이트 기준으로 뷰와 프로젝션 행렬을 구해준다. // 이 프로젝션행렬은 평행광의 경우 직교투영이다.
 	XMMATRIX view     = XMLoadFloat4x4(&mLightView);
 	XMMATRIX proj     = XMLoadFloat4x4(&mLightProj);
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
 
+	// 시야(카메라의 위치)와 앞서 구해준 라이트에 대한 행렬 세팅
 	Effects::BuildShadowMapFX->SetEyePosW(mCam.GetPosition());
 	Effects::BuildShadowMapFX->SetViewProj(viewProj);
 
@@ -888,33 +907,42 @@ void ShadowsApp::DrawScreenQuad()
 void ShadowsApp::BuildShadowTransform()
 {
 	// Only the first "main" light casts a shadow.
+	// 첫번쨰 광원에 대해서 그림자를 만든다.
+
 	XMVECTOR lightDir = XMLoadFloat3(&mDirLights[0].Direction);
 	XMVECTOR lightPos = -2.0f*mSceneBounds.Radius*lightDir;
 	XMVECTOR targetPos = XMLoadFloat3(&mSceneBounds.Center);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMMATRIX V = XMMatrixLookAtLH(lightPos, targetPos, up);
-
+	
 	// Transform bounding sphere to light space.
+	// 경계구를 광원공간으로 변환한다. 이는 세계공간 > 광원공간이며
+	// 기존 시야공간으로 변환하는 것과 똑같은 메커니즘이다.
 	XMFLOAT3 sphereCenterLS;
 	XMStoreFloat3(&sphereCenterLS, XMVector3TransformCoord(targetPos, V));
 
 	// Ortho frustum in light space encloses scene.
+	// 장면을 감싸는 광원 공간 직교투영상자 // 전체 장면구가 접하는 직교투영상자가 만들어진다.
 	float l = sphereCenterLS.x - mSceneBounds.Radius;
 	float b = sphereCenterLS.y - mSceneBounds.Radius;
 	float n = sphereCenterLS.z - mSceneBounds.Radius;
 	float r = sphereCenterLS.x + mSceneBounds.Radius;
 	float t = sphereCenterLS.y + mSceneBounds.Radius;
 	float f = sphereCenterLS.z + mSceneBounds.Radius;
+	
+	// XMMatrixPerspectiveFovLH 대신 직교투영을 위해 다음과 같이 쓴다.
 	XMMATRIX P = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Transform NDC space [-1,+1]^2 to texture space [0,1]^2
+	// 텍스처공간 변환 행렬로  xy(NDC공간[-1 1]) >> uv(텍스처공간[0 1])으로 변환시킨다. 
 	XMMATRIX T(
 		0.5f, 0.0f, 0.0f, 0.0f,
 		0.0f, -0.5f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.5f, 0.5f, 0.0f, 1.0f);
 
+	// 광원공간 > 직교투영(동차나누기를 안해도 NDC공간) > 텍스처공간
 	XMMATRIX S = V*P*T;
 
 	XMStoreFloat4x4(&mLightView, V);

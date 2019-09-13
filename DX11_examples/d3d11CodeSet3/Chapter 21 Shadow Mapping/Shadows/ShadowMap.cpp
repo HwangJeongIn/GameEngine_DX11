@@ -71,6 +71,7 @@ void ShadowMap::BindDsvAndSetNullRenderTarget(ID3D11DeviceContext* dc)
     ID3D11RenderTargetView* renderTargets[1] = {0};
     dc->OMSetRenderTargets(1, renderTargets, mDepthMapDSV);
     
+	// 있을지 모르는 값때문에 지워준다. depth = 1.0f / stencil = 0
     dc->ClearDepthStencilView(mDepthMapDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 

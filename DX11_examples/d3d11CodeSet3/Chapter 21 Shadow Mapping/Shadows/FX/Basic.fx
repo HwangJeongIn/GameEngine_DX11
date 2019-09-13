@@ -42,9 +42,11 @@ SamplerState samLinear
 SamplerComparisonState samShadow
 {
 	Filter   = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	// 투영박스 바깥에 있는 것들에 대해서는 검정색을 입혀서 처리한다.
 	AddressU = BORDER;
 	AddressV = BORDER;
 	AddressW = BORDER;
+	// 경계 검정색
 	BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     ComparisonFunc = LESS;
@@ -81,6 +83,9 @@ VertexOut VS(VertexIn vin)
 	vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
 
 	// Generate projective tex-coords to project shadow map onto scene.
+	// (월드 곱해서 들어옴) 쉐도우의 동차절단 공간에서 텍스처 좌표계 변환행렬을 곱해서 쉐도우 텍스처 좌표로 들어온다.
+	// world(로컬버텍스 > 월드버텍스) >>> lightView(월드 > 라이트 뷰 스페이스) >>> projection(여기선 직교투영 (바로 NDC공간))
+	// >>> toTexture(NDC공간 > 쉐도우맵 텍스처 좌표)
 	vout.ShadowPosH = mul(float4(vin.PosL, 1.0f), gShadowTransform);
 
 	return vout;
@@ -94,9 +99,11 @@ float4 PS(VertexOut pin,
 		  uniform bool gReflectionEnabled) : SV_Target
 {
 	// Interpolating normal can unnormalize it, so normalize it.
+	// 보간으로 인해 더이상 단위 벡터가 아닐 수 있으므로 다시 정규화
     pin.NormalW = normalize(pin.NormalW);
 
 	// The toEye vector is used in lighting.
+	// 라이팅에 사용됨
 	float3 toEye = gEyePosW - pin.PosW;
 
 	// Cache the distance to the eye from this surface point.
@@ -132,10 +139,34 @@ float4 PS(VertexOut pin,
 		float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
 		float4 spec    = float4(0.0f, 0.0f, 0.0f, 0.0f);
+		/*
+		그림자맵 생성
+		 : 그림자를 생성하기 위해서는 기존 시야 기준으로 되어있던것을 모두 변경하고 // 렌더타겟X // 깊이버퍼만 갱신
+		 라이트에서 장면을 렌더링해준다. // 그렇게되면 쉐도우용 깊이버퍼에 렌더링됨
 
+		그림자 적용
+		 : 먼저 한 모델의 버텍스에 대해서 월드 > 라이트스페이스 > 프로젝션 > NDC > 쉐도우맵 텍스처로 변환
+		 여기서 만약 쉐도우맵 텍스처의 범위 바깥이라면 0,0,0(검정색)으로 지정한다.
+
+		 쉐도우맵 주변의 픽셀들을 기준으로 PCF적용 // 그림자인지 아닌지에 대해서 판정해서 보간 // 애일러싱(Aliasing) 방지
+		 세부적으로 들어온 깊이값과 쉐도우맵에 있는 깊이값 판정을해서 그림자가 맞는지 판단 총 4픽셀에 대해서 수행
+
+		 ps. 쉐도우맵도 텍스처이고 어떤영역에 대해서 한 픽셀에 대응되므로, 판정오류로 그림자 반점(shadow acne)이 생길 수 있는데,
+		 이를 막기 위해 편향치(bias)를 설정한다. 단 편향치를 너무 크게 잡으면 그림자와 메쉬가 떨어지는 피터팬(peter-panning) 현상이 발생할수 있다.
+		
+		*/
 		// Only the first light casts a shadow.
+		// 첫번째 라이트에 대해서 그림자를 만든다.
 		float3 shadow = float3(1.0f, 1.0f, 1.0f);
-		shadow[0] = CalcShadowFactor(samShadow, gShadowMap, pin.ShadowPosH);
+
+		// 여기서나오는 값은 그림자 비율에 대한 퍼센트이다.
+		shadow[0] = CalcShadowFactor(
+			// 필터링
+			samShadow,
+			// 쉐도우맵 // 깊이버퍼를 쉐도우리소스의 뷰로 만들어서 들어온다.
+			gShadowMap,
+			// 로컬 버텍스에서 > 쉐도우맵 좌표
+			pin.ShadowPosH);
 
 		// Sum the light contribution from each light source.  
 		[unroll]
@@ -146,6 +177,7 @@ float4 PS(VertexOut pin,
 				A, D, S);
 
 			ambient += A;    
+			// 디퓨즈와 스펙큘러에 적용
 			diffuse += shadow[i]*D;
 			spec    += shadow[i]*S;
 		}

@@ -192,12 +192,21 @@ DomainOut DS(PatchTess patchTess,
 // This is only used for alpha cut out geometry, so that shadows 
 // show up correctly.  Geometry that does not need to sample a
 // texture can use a NULL pixel shader for depth pass.
+
+/*
+이 픽셀쉐이더는 알파값 기반 투명 패턴을 가진 기하구조에만 쓰인다.
+깊이 패스의 경우 텍스처를 추출할 필요가 없는 기하구조에 대해서는 NULL픽셀쉐이더를 사용해도 된다.
+*/
 void PS(VertexOut pin)
 {
 	float4 diffuse = gDiffuseMap.Sample(samLinear, pin.Tex);
 
 	// Don't write transparent pixels to the shadow map.
+
+	// 투명한 픽셀은 쉐도우 맵에서 버린다. // clip : 입력의 값이 0이하이면 버림
 	clip(diffuse.a - 0.15f);
+
+	// 깊이값만 출력하면되기 때문에 픽셀쉐이더가 아무 값도 돌려주지 않는다.
 }
 
 // This is only used for alpha cut out geometry, so that shadows 
@@ -211,6 +220,7 @@ void TessPS(DomainOut pin)
 	clip(diffuse.a - 0.15f);
 }
 
+// 편향치 계산을 위한 세팅 // 기울기 비례 편향치 설정
 RasterizerState Depth
 {
 	// [From MSDN]
