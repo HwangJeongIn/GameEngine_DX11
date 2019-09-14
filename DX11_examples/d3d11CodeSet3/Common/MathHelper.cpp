@@ -68,10 +68,13 @@ XMVECTOR MathHelper::RandHemisphereUnitVec3(XMVECTOR n)
 		// over the unit sphere.  Otherwise points will clump more on the sphere near 
 		// the corners of the cube.
 		
+		// 길이가 더길거나
 		if( XMVector3Greater( XMVector3LengthSq(v), One) )
 			continue;
 
 		// Ignore points in the bottom hemisphere.
+		// 그 노말벡터와 내적을 해서 0보다 작은 값이 나온면 다시 구해준다.
+		// 90도 이상이 나오면 반구안에 위치하지 않은 것이다.
 		if( XMVector3Less( XMVector3Dot(n, v), Zero ) )
 			continue;
 

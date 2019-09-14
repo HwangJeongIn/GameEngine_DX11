@@ -308,6 +308,7 @@ void SsaoApp::OnResize()
 {
 	D3DApp::OnResize();
 
+	// fov ¼öÁ÷ ½Ã¾ß°¢
 	mCam.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
 	if( mSsao )
@@ -406,7 +407,7 @@ void SsaoApp::DrawScene()
 	md3dImmediateContext->ClearRenderTargetView(mRenderTargetView, reinterpret_cast<const float*>(&Colors::Silver));
 
 	// We already laid down scene depth to the depth buffer in the Normal/Depth map pass,
-	// so we can set the depth comparison test to “EQUALS.”  This prevents any overdraw
+	// so we can set the depth comparison test to “EQUALS.? This prevents any overdraw
 	// in this rendering pass, as only the nearest visible pixels will pass this depth
 	// comparison test.
 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::EqualsDSS, 0);

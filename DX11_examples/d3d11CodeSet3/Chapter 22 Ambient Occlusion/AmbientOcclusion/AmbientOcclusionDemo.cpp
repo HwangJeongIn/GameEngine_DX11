@@ -217,14 +217,19 @@ void AmbientOcclusionApp::BuildVertexAmbientOcclusion(
 	UINT vcount = vertices.size();
 	UINT tcount = indices.size()/3;
 
+	// 모든 버텍스들의 위치를 받아온다.
 	std::vector<XMFLOAT3> positions(vcount);
 	for(UINT i = 0; i < vcount; ++i)
 		positions[i] = vertices[i].Pos;
 
+	// 자식노드가 8개인 옥트리를 만들어서
+	// 인덱스와 위치를 넣어준다. // 내부 삼각형이 60개 이하가 될때까지 바운딩 박스를 8개로 계속해서 분할한다.
+	// 만약 삼각형의 갯수가 60개 이하로 나온다면 분할 없이 저장한다.
 	Octree octree;
 	octree.Build(positions, indices);
 
 	// For each vertex, count how many triangles contain the vertex.
+	// 각 정점마다 그 정점을 공유하는 삼각형이 몇개인지 카운트
 	std::vector<int> vertexSharedCount(vcount);
 	for(UINT i = 0; i < tcount; ++i)
 	{
@@ -232,28 +237,41 @@ void AmbientOcclusionApp::BuildVertexAmbientOcclusion(
 		UINT i1 = indices[i*3+1];
 		UINT i2 = indices[i*3+2];
 
+		// 인덱스에서 버텍스의 인덱스를 받고 위치를 받아온다.
 		XMVECTOR v0 = XMLoadFloat3(&vertices[i0].Pos);
 		XMVECTOR v1 = XMLoadFloat3(&vertices[i1].Pos);
 		XMVECTOR v2 = XMLoadFloat3(&vertices[i2].Pos);
 
+		// 변에 대해서 계산
 		XMVECTOR edge0 = v1 - v0;
 		XMVECTOR edge1 = v2 - v0;
 
+		// 그 면에 대해서 노말벡터 계산
 		XMVECTOR normal = XMVector3Normalize(XMVector3Cross(edge0, edge1));
 
+		// 무게중심도 구해준다.
 		XMVECTOR centroid = (v0 + v1 + v2)/3.0f;
 
 		// Offset to avoid self intersection.
+		// 자기자신과의 교차를 막기 위해서 조금 띄워준다. // 노말 방향으로
 		centroid += 0.001f*normal;
 
+		// 샘플 레이 32개
 		const int NumSampleRays = 32;
+		// 차폐되지 않는 레이 개수
 		float numUnoccluded = 0;
 		for(int j = 0; j < NumSampleRays; ++j)
 		{
+			// 반구에 대해서 랜덤한 레이를 구해준다. 
+			// 노말벡터기준으로 반구가 생성된다. // 내적을 이용해서 구함
 			XMVECTOR randomDir = MathHelper::RandHemisphereUnitVec3(normal);
 
 			// TODO: Technically we should not count intersections that are far 
 			// away as occluding the triangle, but this is OK for demo.
+			// 일반적으로 먼거리에서 삼각형을 차폐한다면 카운트하면 안된다. 이는 빛이 들어온다고 가정하기 때문이다.
+			// 여기서는 그냥 써준다.
+
+			// 교차하는 삼각형이 없으면 카운트를 올려준다.
 			if( !octree.RayOctreeIntersect(centroid, randomDir) )
 			{
 				numUnoccluded++;
@@ -263,16 +281,20 @@ void AmbientOcclusionApp::BuildVertexAmbientOcclusion(
 		float ambientAccess = numUnoccluded / NumSampleRays;
 
 		// Average with vertices that share this face.
+		// 현재 버텍스들에 대해서 도달한 값들을 더해준다 // 버텍스를 공유하는 삼각형들에 대해서 누적될것이다.
+		// 빛이 들어온 비율이라고 보면된다 // :: 차폐되지않은 레이 수 / 발사한 레이 수
 		vertices[i0].AmbientAccess += ambientAccess;
 		vertices[i1].AmbientAccess += ambientAccess;
 		vertices[i2].AmbientAccess += ambientAccess;
 
+		// 공유하는 정점들이 몇개인지 판단
 		vertexSharedCount[i0]++;
 		vertexSharedCount[i1]++;
 		vertexSharedCount[i2]++;
 	}
 
 	// Finish average by dividing by the number of samples we added.
+	// 누적된 값을 사용하게되면 한 버텍스에 대해서 너무 밝게 나타나기 때문에 평균값 사용
 	for(UINT i = 0; i < vcount; ++i)
 	{
 		vertices[i].AmbientAccess /= vertexSharedCount[i];

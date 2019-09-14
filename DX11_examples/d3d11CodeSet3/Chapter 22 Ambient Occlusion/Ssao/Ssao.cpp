@@ -166,11 +166,15 @@ void Ssao::BlurAmbientMap(ID3D11ShaderResourceView* inputSRV, ID3D11RenderTarget
 
 void Ssao::BuildFrustumFarCorners(float fovy, float farZ)
 {
+	// 렌더타겟의 가로 세로 비율을 계산
 	float aspect = (float)mRenderTargetWidth / (float)mRenderTargetHeight;
 
+	// 수직 시야각과 먼거리를 계산해서 높이의 절반을 구하고
 	float halfHeight = farZ * tanf( 0.5f*fovy );
+	// 비율을 이용해서 너비의 절반을 구한다.
 	float halfWidth  = aspect * halfHeight;
 
+	// 먼 사각형의 모서리를 구한다.
 	mFrustumFarCorner[0] = XMFLOAT4(-halfWidth, -halfHeight, farZ, 0.0f);
 	mFrustumFarCorner[1] = XMFLOAT4(-halfWidth, +halfHeight, farZ, 0.0f);
 	mFrustumFarCorner[2] = XMFLOAT4(+halfWidth, +halfHeight, farZ, 0.0f);
@@ -181,12 +185,14 @@ void Ssao::BuildFullScreenQuad()
 {
 	Vertex::Basic32 v[4];
 
+	// 깊이 값을 제외하고 나머지를 계산했다.
 	v[0].Pos = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	v[1].Pos = XMFLOAT3(-1.0f, +1.0f, 0.0f);
 	v[2].Pos = XMFLOAT3(+1.0f, +1.0f, 0.0f);
 	v[3].Pos = XMFLOAT3(+1.0f, -1.0f, 0.0f);
 
 	// Store far plane frustum corner indices in Normal.x slot.
+	// 노말슬롯에 각 절두체 모서리의 인덱스를 저장하였다.
 	v[0].Normal = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	v[1].Normal = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	v[2].Normal = XMFLOAT3(2.0f, 0.0f, 0.0f);
@@ -334,8 +340,18 @@ void Ssao::BuildOffsetVectors()
 	// and the 6 center points along each cube face.  We always alternate the points on 
 	// opposites sides of the cubes.  This way we still get the vectors spread out even
 	// if we choose to use less than 14 samples.
+	/*
+	14개의 고르게 분포된 벡터들로 시작한다. 
+	입방체의 여덟 꼭짓점과 각 면의 중심 여섯개를 그러한 벡터들로 간주
+	이들을 이웃한 두원소가 서로 입방체의 반대쪽에 있도록 순서를 저장
+	항상 고른 분포의 벡터들을 얻을 수 있다.
+	*/
 	
+	// 4차원 동차 벡터를 사용하는 이유는 효과파일에서 
+	// 오프셋 벡터들의 배열을 설정할떄 바이트 정렬문제가 생기지 않도록 하기 위함이다.
+
 	// 8 cube corners
+	// 8개의 꼭짓점에 대한 오프셋
 	mOffsets[0] = XMFLOAT4(+1.0f, +1.0f, +1.0f, 0.0f);
 	mOffsets[1] = XMFLOAT4(-1.0f, -1.0f, -1.0f, 0.0f);
 
@@ -349,6 +365,7 @@ void Ssao::BuildOffsetVectors()
 	mOffsets[7] = XMFLOAT4(+1.0f, -1.0f, +1.0f, 0.0f);
 
 	// 6 centers of cube faces
+	// 6개의 면에 대한 오프셋
 	mOffsets[8] = XMFLOAT4(-1.0f, 0.0f, 0.0f, 0.0f);
 	mOffsets[9] = XMFLOAT4(+1.0f, 0.0f, 0.0f, 0.0f);
 
@@ -361,6 +378,7 @@ void Ssao::BuildOffsetVectors()
     for(int i = 0; i < 14; ++i)
 	{
 		// Create random lengths in [0.25, 1.0].
+		// 길이는 렌덤하게 생성
 		float s = MathHelper::RandF(0.25f, 1.0f);
 		
 		XMVECTOR v = s * XMVector4Normalize(XMLoadFloat4(&mOffsets[i]));

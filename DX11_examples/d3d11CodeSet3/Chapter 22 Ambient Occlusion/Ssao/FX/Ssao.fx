@@ -58,12 +58,18 @@ VertexOut VS(VertexIn vin)
 	VertexOut vout;
 	
 	// Already in NDC space.
+	// 이미 ndc공간 안에 있다.
 	vout.PosH = float4(vin.PosL, 1.0f);
 
 	// We store the index to the frustum corner in the normal x-coord slot.
+	// 실제 뷰스페이스에서의 먼평면에 대한 꼭짓점이다. // 너비 높이 깊이 다 NDC가 아님
+	// 절대체의 모서리 인덱스를 노말의 x슬롯에 넣는다.
+	// 이는 꼭짓점 벡터이다. 
+	// 픽셀쉐이더에서는 각 픽셀에 대해서 보간되어 시점에서 먼 면에 대한 각 방향벡터를 구할 수 있다.
 	vout.ToFarPlane = gFrustumCorners[vin.ToFarPlaneIndex.x].xyz;
 
 	// Pass onto pixel shader.
+	// 텍스처 좌표는 그대로 픽셀 쉐이더로 넘겨준다.
 	vout.Tex = vin.Tex;
 	
     return vout;
@@ -107,16 +113,27 @@ float OcclusionFunction(float distZ)
 
 float4 PS(VertexOut pin, uniform int gSampleCount) : SV_Target
 {
+	// 주변광 차폐를 하는 포인트
 	// p -- the point we are computing the ambient occlusion for.
+	
+	// p에 대한 노멀벡터
 	// n -- normal vector at p.
+	
+	// p에서 랜덤하게 떨어진 q // 레이중 하나
 	// q -- a random offset from p.
+	
+	// p를 차폐할 수도 있는 잠재적인 차폐기
 	// r -- a potential occluder that might occlude p.
 
 	// Get viewspace normal and z-coord of this pixel.  The tex-coords for
 	// the fullscreen quad we drew are already in uv-space.
+
+	// 뷰스페이스에서의 노말값과 깊이 값이다. // r값
 	float4 normalDepth = gNormalDepthMap.SampleLevel(samNormalDepth, pin.Tex, 0.0f);
  
+	// 현재 픽셀에 대해서 뷰스페이스의 노말벡터는 텍셀의 xyz에 저장되어있다.
 	float3 n = normalDepth.xyz;
+	// 현재 픽셀에 대해서 뷰스페이스의 깊이값은 텍셀의 w에 저장되어 있다.
 	float pz = normalDepth.w;
 
 	//
