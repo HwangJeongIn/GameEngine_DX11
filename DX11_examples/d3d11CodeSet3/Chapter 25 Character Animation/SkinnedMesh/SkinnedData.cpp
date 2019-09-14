@@ -31,6 +31,7 @@ float BoneAnimation::GetEndTime()const
 
 void BoneAnimation::Interpolate(float t, XMFLOAT4X4& M)const
 {
+	// 만약에 시간이 첫번째 시간위치보다 작으면 첫프레임으로 고정
 	if( t <= Keyframes.front().TimePos )
 	{
 		XMVECTOR S = XMLoadFloat3(&Keyframes.front().Scale);
@@ -40,6 +41,7 @@ void BoneAnimation::Interpolate(float t, XMFLOAT4X4& M)const
 		XMVECTOR zero = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 		XMStoreFloat4x4(&M, XMMatrixAffineTransformation(S, zero, Q, P));
 	}
+	// 만약 시간이 마지막 시간위치보다 크다면 마지막 프레임으로 고정
 	else if( t >= Keyframes.back().TimePos )
 	{
 		XMVECTOR S = XMLoadFloat3(&Keyframes.back().Scale);
@@ -51,12 +53,16 @@ void BoneAnimation::Interpolate(float t, XMFLOAT4X4& M)const
 	}
 	else
 	{
+		// 돌면서 어떤시간 안에 있는것인지 확인
 		for(UINT i = 0; i < Keyframes.size()-1; ++i)
 		{
+			
 			if( t >= Keyframes[i].TimePos && t <= Keyframes[i+1].TimePos )
 			{
+				// 특정 프레임 사이라면 그 프래임 사이의 위치를 정해준다.
 				float lerpPercent = (t - Keyframes[i].TimePos) / (Keyframes[i+1].TimePos - Keyframes[i].TimePos);
 
+				// 프레임 두개의 각 행렬을 구하고, 그사이를 보간해준다.
 				XMVECTOR s0 = XMLoadFloat3(&Keyframes[i].Scale);
 				XMVECTOR s1 = XMLoadFloat3(&Keyframes[i+1].Scale);
 
@@ -144,6 +150,7 @@ void SkinnedData::GetFinalTransforms(const std::string& clipName, float timePos,
 	std::vector<XMFLOAT4X4> toParentTransforms(numBones);
 
 	// Interpolate all the bones of this clip at the given time instance.
+	// 각뼈대의 행렬을 구해준다. // 오프셋 행렬 // 두 프레임 사이에 있다면 보간을 해준다.
 	auto clip = mAnimations.find(clipName);
 	clip->second.Interpolate(timePos, toParentTransforms);
 
