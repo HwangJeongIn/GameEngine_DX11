@@ -383,17 +383,27 @@ void SsaoApp::DrawScene()
 	// This render pass is needed to compute the ambient occlusion.
 	// Notice that we use the main depth/stencil buffer in this pass.  
 	//
+	/*
+	시야 공간 법선들과 깊이들을 렌더링 한다. 이 렌더 대상의 크기는 후면 버퍼와 동일하다.
+	따라서 화면용 뷰포트를 뷰포트로 사용하면 된다. 이 렌더링 패스는 주변광 차폐 계산에 필요한것
+	이 패스에서 깊이 스텐실 버퍼를 사용함
+	*/
 
 	md3dImmediateContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL, 1.0f, 0);
 	md3dImmediateContext->RSSetViewports(1, &mScreenViewport);
+	
+	// 노말과 뎁스를 렌더링하기 위한 렌더타겟으로 바꿔준다.
+	// 내부적으로 렌더타겟과 뎁스 스텐실뷰를 바꿔준다.
 	mSsao->SetNormalDepthRenderTarget(mDepthStencilView);
 	
+	// 법선깊이 맵을 만들어준다.
 	DrawSceneToSsaoNormalDepthMap();
 
 	//
 	// Now compute the ambient occlusion.
 	//
 
+	// 법선깊이맵을 가지고 ssao맵을 만들어준다.
 	mSsao->ComputeSsao(mCam);
 	mSsao->BlurAmbientMap(4);
 
@@ -410,6 +420,9 @@ void SsaoApp::DrawScene()
 	// so we can set the depth comparison test to 밇QUALS.? This prevents any overdraw
 	// in this rendering pass, as only the nearest visible pixels will pass this depth
 	// comparison test.
+
+	// 이미 뎁스 값들은 뎁스버퍼에 다 들어가 있기 때문에 뎁스를 비교해가면서 덮어쓰는 작업을 하지 않아도된다.
+	// Equal비교연산을 통해서 같은 뎁스에 있는 픽셀을 렌더링하면된다.
 	md3dImmediateContext->OMSetDepthStencilState(RenderStates::EqualsDSS, 0);
  
 	XMMATRIX view     = mCam.View();

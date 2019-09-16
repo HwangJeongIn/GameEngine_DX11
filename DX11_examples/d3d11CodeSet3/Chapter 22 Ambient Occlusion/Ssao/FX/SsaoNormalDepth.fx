@@ -44,6 +44,7 @@ VertexOut VS(VertexIn vin)
 	// Transform to view space.
 	// 일단 뷰스페이스로 바꾼다.
 	vout.PosV    = mul(float4(vin.PosL, 1.0f), gWorldView).xyz;
+
 	// 노말도 뷰스페이스 기준으로 계산해준다.
 	vout.NormalV = mul(vin.NormalL, (float3x3)gWorldInvTransposeView);
 		
@@ -53,6 +54,8 @@ VertexOut VS(VertexIn vin)
 	
 	// Output vertex attributes for interpolation across triangle.
 	vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
+
+	// 법선 깊이 렌더타겟으로 잡고 했는데, 최종적으로 씬에 있는 가장 가까운 노말과 깊이값이 텍스처에 입력이 될것이다.
  
 	return vout;
 }

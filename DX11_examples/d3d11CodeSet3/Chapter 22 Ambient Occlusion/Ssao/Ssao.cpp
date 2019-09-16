@@ -70,6 +70,8 @@ void Ssao::ComputeSsao(const Camera& camera)
 	// Bind the ambient map as the render target.  Observe that this pass does not bind 
 	// a depth/stencil buffer--it does not need it, and without one, no depth test is
 	// performed, which is what we want.
+
+	// 뎁스스텐실 버퍼를 사용하지 않았는데, 이는 뎁스테스트를 하지 않기 위해서이다.
 	ID3D11RenderTargetView* renderTargets[1] = {mAmbientRTV0};
 	mDC->OMSetRenderTargets(1, renderTargets, 0);
 	mDC->ClearRenderTargetView(mAmbientRTV0, reinterpret_cast<const float*>(&Colors::Black));
@@ -263,6 +265,7 @@ void Ssao::BuildTextureViews()
 	ReleaseCOM(normalDepthTex);
 	
 	// Render ambient map at half resolution.
+	// ssao 맵은 절반의 해상도로 만들어준다 // 성능상의 이유
 	texDesc.Width = mRenderTargetWidth / 2;
 	texDesc.Height = mRenderTargetHeight / 2;
 	texDesc.Format = DXGI_FORMAT_R16_FLOAT;

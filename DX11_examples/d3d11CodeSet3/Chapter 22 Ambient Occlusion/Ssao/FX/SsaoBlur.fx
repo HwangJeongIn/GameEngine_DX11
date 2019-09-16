@@ -88,6 +88,7 @@ float4 PS(VertexOut pin, uniform bool gHorizontalBlur) : SV_Target
 	}
 
 	// The center value always contributes to the sum.
+	// 필터핵 중앙 표본은 항상 총합에 기여
 	float4 color      = gWeights[5]*gInputImage.SampleLevel(samInputImage, pin.Tex, 0.0);
 	float totalWeight = gWeights[5];
 	 
@@ -96,6 +97,7 @@ float4 PS(VertexOut pin, uniform bool gHorizontalBlur) : SV_Target
 	for(float i = -gBlurRadius; i <=gBlurRadius; ++i)
 	{
 		// We already added in the center weight.
+		// 중앙 가중치는 합산한 상태
 		if( i == 0 )
 			continue;
 
@@ -109,6 +111,9 @@ float4 PS(VertexOut pin, uniform bool gHorizontalBlur) : SV_Target
 		// normal or depth), then we assume we are sampling across a discontinuity.
 		// We discard such samples from the blur.
 		//
+
+		// 중앙의 값과 그 이웃 값의 차이가 너무 크면(법선이든, 깊이이든)
+		// 필터 핵이 가장자리에 있다는 것으로 간주해서 해당 표본들을 흐리기에서 제외시킨다.
 	
 		if( dot(neighborNormalDepth.xyz, centerNormalDepth.xyz) >= 0.8f &&
 		    abs(neighborNormalDepth.a - centerNormalDepth.a) <= 0.2f )
